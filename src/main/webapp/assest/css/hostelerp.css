@@ -1,0 +1,9 @@
+.hfmsMainContent, .hfmsNavCollapse {
+	font-family: verdana;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.hfmsLoader {
+	display: none;
+}
