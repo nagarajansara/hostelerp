@@ -21,17 +21,20 @@ public class MenuDAOImpl implements MenuDAO
 	final String USER_ROLE_PROJECTMANAGER = "projectmanager";
 	final String USER_ROLE_ADMIN = "admin";
 
-	String GET_MENU_MASS = "SELECT ms.*,  " + ":accessstatus AS  save_access, "
-			+ " :accessstatus AS  edit_access, "
-			+ " :accessstatus AS  delete_access " + "FROM " + "menu_mas ms "
-			+ "LEFT OUTER JOIN " + "user_vs_menu um " + "ON "
-			+ "ms.menu_id = um.menu_id ";
+	String GET_MENU_MASS = "SELECT ms.*,  "
+			+ "IFNULL(save_access, 'no') AS  save_access, "
+			+ "IFNULL(edit_access, 'no') AS  edit_access, "
+			+ "IFNULL(delete_access, 'no') AS  delete_access " + "FROM "
+			+ "menu_mas ms " + "LEFT OUTER JOIN "
+			+ "(SELECT * FROM user_vs_menu WHERE userid =:userid) AS um "
+			+ "ON " + "ms.menu_id = um.menu_id ";
 
 	@Override
-	public List<Menu> getMenus(String userRole) throws Exception
+	public List<Menu> getMenus(String userRole, int userId) throws Exception
 	{
 		Map paramMap = new HashMap();
 		paramMap.put("accessstatus", "yes");
+		paramMap.put("userid", userId);
 		String tempQuery = "";
 		if (userRole.equals(USER_ROLE_PROJECTMANAGER))
 		{

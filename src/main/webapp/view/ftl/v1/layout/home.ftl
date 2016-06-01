@@ -25,6 +25,6 @@
 	</section>
 <#include "lib/footer.ftl">
 <script type="text/javascript">
-	console.log(1);
+
 </script>
 

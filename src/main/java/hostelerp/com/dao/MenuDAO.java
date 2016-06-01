@@ -6,6 +6,6 @@ import hostelerp.com.model.*;
 
 public interface MenuDAO
 {
-	List<Menu> getMenus(String userRole) throws Exception;
+	List<Menu> getMenus(String userRole, int userId) throws Exception;
 
 }

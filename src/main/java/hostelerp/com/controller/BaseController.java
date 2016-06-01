@@ -107,8 +107,8 @@ public class BaseController
 		{
 			HttpSession session = request.getSession();
 			session.setAttribute(ATTR_USER_ID, user.getUserid());
-			session.setAttribute(ATTR_ROLE, user.getUsertype());
 			session.setAttribute(ATTR_NAME, user.getUsername());
+			session.setAttribute(ATTR_FNAME, user.getFirstname());
 			session.setAttribute(ATTR_USER_TYPE, user.getUsertype());
 
 		}

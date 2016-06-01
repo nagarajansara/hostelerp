@@ -10,6 +10,7 @@ function CtDAO() {
     this.API_PREFIX = this.HTTP_URL_PREFIX + "api";
 
     this.LOGIN_VALIDATE = this.API_PREFIX + "/login/validate.json";
+    this.ADD_USERS = this.API_PREFIX + "/manager/addUsers.json";
 
     this.RESPONSE_CACHE = {};
 
@@ -22,6 +23,10 @@ function CtDAO() {
 CtDAO.prototype.getLoginValidate = function(postParams, cbk) {
     var tObj = this;
     tObj.getData(tObj.LOGIN_VALIDATE, postParams, cbk);
+};
+CtDAO.prototype.addUsers = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.ADD_USERS, postParams, cbk);
 };
 CtDAO.prototype.getData = function(url, postParams, callback, isCacheMap,
 	isParse) {

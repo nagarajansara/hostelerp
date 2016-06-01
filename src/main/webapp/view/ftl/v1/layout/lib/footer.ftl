@@ -19,5 +19,9 @@
 <script src="${baseURL}/assest/dao/hfmsdao.js"></script>
 <script src="${baseURL}/assest/util/hfmsutils.js"></script>
 
+<script src="${baseURL}/assest/plugin/parsely.js"></script>
 </body>
 </html>
+<script type="text/javascript">
+	$(".dcjq-parent-li").addClass("sub-menu");
+</script>

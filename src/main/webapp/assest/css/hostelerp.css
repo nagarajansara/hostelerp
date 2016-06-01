@@ -1,9 +1,39 @@
 .hfmsMainContent, .hfmsNavCollapse {
 	font-family: verdana;
 	font-size: 12px;
-	font-weight: bold;
+}
+
+.parsley-required {
+	color: red;
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: none;
 }
 
 .hfmsLoader {
 	display: none;
+}
+
+.hfmsMainContent input, .hfmsMainContent select {
+	color: #767676;
+}
+
+.pkDataCommonTable {
+	font-size: 12px;
+	border-bottom: none !important;
+	color: #000;
+	font-weight: bold;
+}
+
+.pkDataCommonTable thead th {
+	border: none !important;
+}
+
+.pkDataCommonTable thead tr {
+	background-color: #1FB5AD;
+	border-bottom-color: #1FB5AD !important;
+	border-left-color: #1FB5AD !important;
+	border-right-color: #1FB5AD !important;
+	border-top-color: #1FB5AD !important;
+	color: #ffffff;
 }

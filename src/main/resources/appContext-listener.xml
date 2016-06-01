@@ -17,6 +17,8 @@
 	</bean>
 	<bean id="loginService" class="hostelerp.com.service.impl.LoginServiceImpl">
 	</bean>
+	<bean id="projectManagerService" class="hostelerp.com.service.impl.ProjectManagerServiceImpl">
+	</bean>
 
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

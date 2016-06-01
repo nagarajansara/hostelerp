@@ -92,7 +92,8 @@ public class LoginController extends BaseController
 					Login login = (Login) list.get(0);
 					setUserSession(request, login);
 					List<Menu> menuList =
-							loginService.getMenus(login.getUsertype());
+							loginService.getMenus(login.getUsertype(),
+									login.getUserid());
 					setUserSessionMenuMas(request, menuList);
 					utilities.setSuccessResponse(response);
 				} else

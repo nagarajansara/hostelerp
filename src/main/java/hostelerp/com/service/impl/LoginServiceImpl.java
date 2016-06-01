@@ -38,9 +38,9 @@ public class LoginServiceImpl implements LoginService
 	}
 
 	@Override
-	public List<Menu> getMenus(String userRole) throws Exception
+	public List<Menu> getMenus(String userRole, int userId) throws Exception
 	{
-		return menuDAO.getMenus(userRole);
+		return menuDAO.getMenus(userRole, userId);
 	}
 
 }

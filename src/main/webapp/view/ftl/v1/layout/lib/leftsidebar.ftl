@@ -2,7 +2,7 @@
 	<div id="sidebar" class="nav-collapse hfmsNavCollapse">
 		<!-- sidebar menu start-->
 		<div class="leftside-navigation">
-			<ul class="sidebar-menu" id="nav-accordion">
+			<ul class="sidebar-menu hfmsLeftSideMenu" id="nav-accordion">
 				<#if Session.menulist??>
 					<#assign parent_id = 0>
 					<#assign menu_id = 0>
@@ -13,7 +13,7 @@
 							 	<ul class="sub">
 							 	<#assign isChild = 1>
 							 </#if>
-								<li><a href="boxed_page.html">${element.menu_name }</a></li>
+								<li><a href="${element.menu_url}">${element.menu_name }</a></li>
 						</#if>
 						<#if  element.parent_id != menu_id && isChild == 1 >
 							</ul>
@@ -24,7 +24,7 @@
 								</li>
 							</#if>
 							 <li>
-								<a href="index.html">
+								<a href="${baseURL}/${element.menu_url}" class="hfms_${element.menu_name }">
 									<i class="${element.menu_icon}"></i>
 									<span>${element.menu_name }</span>
 								</a>

@@ -49,6 +49,7 @@ public class AuthenticationFilter extends BaseController implements Filter
 		AUTHENTICATED_URL.add("getlogin.json");
 		AUTHENTICATED_URL.add("validate.json");
 		AUTHENTICATED_URL.add("validate");
+		AUTHENTICATED_URL.add("logout");
 
 	}
 
