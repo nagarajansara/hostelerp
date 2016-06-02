@@ -108,4 +108,12 @@ public class Users implements Serializable
 		this.usertype = usertype;
 	}
 
+	public Users(int userId, String username, String firstname, String usertype)
+	{
+		this.userid = userId;
+		this.username = username;
+		this.firstname = firstname;
+		this.usertype = usertype;
+	}
+
 }

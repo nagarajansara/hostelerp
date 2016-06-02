@@ -30,7 +30,7 @@
 
 <link href="${baseURL}/assest/css/hostelerp.css" rel="stylesheet" />
 
-<link href="${baseURL}/theme/css/table-responsive.css" rel="stylesheet" />
+<!--<link href="${baseURL}/theme/css/table-responsive.css" rel="stylesheet" />-->
 
 <!-- Just for debugging purposes. Don't actually copy this line! -->
 <!--[if lt IE 9]>

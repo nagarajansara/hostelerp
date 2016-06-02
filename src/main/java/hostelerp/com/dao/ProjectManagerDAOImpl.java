@@ -35,6 +35,36 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 					+ "ORDER BY created_on DESC LIMIT :startINdx, :endIndx ";
 	final String GET_USERS_SEARCH_PARAM_NUMENTRIES =
 			"SELECT count(*) from users where status =:status AND (username like :searchParam OR usertype like :searchParam) ";
+	final String DELETE_USER =
+			"Update users set status=:status where userid =:userid";
+	final String GET_USERS_VIA_ID = "SELECT * from users where userid =:userid";
+	final String UPDATE_USERS_VIA_ID =
+			"UPDATE users set username=:username, firstname=:firstname, usertype=:usertype "
+					+ "Where userid=:userid";
+	final String GET_CITY =
+			"Select * from city where status =:status AND name like :name";
+	final String GET_STATE =
+			"Select * from state where status =:status AND name like :name";
+	final String GET_STUDENTS =
+			"SELECT *,REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', id) AS editBtn "
+					+ "from student where status =:status ORDER BY created_at DESC LIMIT :startIndx, :endIndx";
+	final String GET_STUDENTS_NUMENTRIES =
+			"SELECT count(*) from student where status =:status";
+	final String GET_STUDENT_VIA_SEARCHPARAM =
+			"SELECT *, ,REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', id) AS editBtn "
+					+ "from student where status =:status AND "
+					+ "(name LIKE :searchParam OR rollno LIKE :searchParam OR course LIKE :searchParam OR messtype LIKE :searchParam) "
+					+ "ORDER BY created_at LIMIT :startIndx, :endIndx";
+	final String GET_STUDENT_NUMENTRIES_VIA_SEARCHPARAM =
+			"SELECT count(*) from student where status =:status AND "
+					+ "(name LIKE :searchParam OR rollno LIKE :searchParam OR course LIKE :searchParam OR messtype LIKE :searchParam) ";
+	final String ADD_STUDENT =
+			"INSERT INTO student (name, rollno, batch, course, messtype, address, state, city, country) "
+					+ "VALUES (:name, :rollno, :batch, :course, :messtype, :address, :state, :city, :country)";
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -97,6 +127,125 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("searchParam", searchParam + "%");
 		return namedParameterJdbcTemplate.queryForInt(
 				GET_USERS_SEARCH_PARAM_NUMENTRIES, paramMap);
+	}
+
+	@Override
+	public void deleteUsers(int userId, String sTATUS_INACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("userid", userId);
+		paramMap.put("status", sTATUS_INACTIVE);
+
+		namedParameterJdbcTemplate.update(DELETE_USER, paramMap);
+
+	}
+
+	@Override
+	public List<Users> getUsersViaId(int userId) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("userid", userId);
+
+		return namedParameterJdbcTemplate.query(GET_USERS_VIA_ID, paramMap,
+				new BeanPropertyRowMapper(Users.class));
+	}
+
+	@Override
+	public void updateUsersViaId(Users users) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("username", users.getUsername());
+		paramMap.put("firstname", users.getFirstname());
+		paramMap.put("usertype", users.getUsertype());
+		paramMap.put("userid", users.getUserid());
+
+		namedParameterJdbcTemplate.update(UPDATE_USERS_VIA_ID, paramMap);
+
+	}
+
+	@Override
+	public List<CityState> getCityAndState(String locationname, String status,
+			boolean isCity) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", status);
+		paramMap.put("name", locationname + "%");
+		if (isCity)
+		{
+			return namedParameterJdbcTemplate.query(GET_CITY, paramMap,
+					new BeanPropertyRowMapper(CityState.class));
+		} else
+		{
+			return namedParameterJdbcTemplate.query(GET_STATE, paramMap,
+					new BeanPropertyRowMapper(CityState.class));
+		}
+
+	}
+
+	@Override
+	public List<Student> getStudentViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+		paramMap.put("searchParam", searchParameter + "%");
+
+		return namedParameterJdbcTemplate.query(GET_STUDENT_VIA_SEARCHPARAM,
+				paramMap, new BeanPropertyRowMapper(Student.class));
+	}
+
+	@Override
+	public List<Student> getStudent(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+
+		return namedParameterJdbcTemplate.query(GET_STUDENTS, paramMap,
+				new BeanPropertyRowMapper(Student.class));
+	}
+
+	@Override
+	public int getStudentNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.queryForInt(GET_STUDENTS_NUMENTRIES,
+				paramMap);
+	}
+
+	@Override
+	public int getStudentNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_STUDENT_NUMENTRIES_VIA_SEARCHPARAM, paramMap);
+	}
+
+	@Override
+	public void addStudent(Student student) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", student.getName());
+		paramMap.put("rollno", student.getRollno());
+		paramMap.put("batch", student.getBatch());
+		paramMap.put("course", student.getCourse());
+		paramMap.put("messtype", student.getMesstype());
+		paramMap.put("address", student.getAddress());
+		paramMap.put("state", student.getState());
+		paramMap.put("city", student.getCity());
+		paramMap.put("country", student.getCountry());
+
+		namedParameterJdbcTemplate.update(ADD_STUDENT, paramMap);
+
 	}
 
 }

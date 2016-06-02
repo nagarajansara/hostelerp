@@ -79,6 +79,17 @@ public class BaseController
 		return val;
 	}
 
+	public Object getSessionAttrMenu(HttpServletRequest request)
+	{
+		HttpSession session = request.getSession();
+		Object obj = null;
+		if (session != null)
+		{
+			obj = session.getAttribute(ATTR_MENU);
+		}
+		return obj;
+	}
+
 	public String getRole(HttpServletRequest request) throws ConstException
 	{
 		String role = null;
@@ -138,5 +149,60 @@ public class BaseController
 		{
 			session.invalidate();
 		}
+	}
+
+	public boolean isMenuAccessDenied(int menuId, String accessType,
+			HttpServletRequest request) throws Exception
+	{
+		boolean isAccessDined = false;
+		try
+		{
+			List<Menu> menu = (List<Menu>) getSessionAttrMenu(request);
+			if (menu != null && menu.size() > 0)
+			{
+				for (int i = 0; i < menu.size(); i++)
+				{
+					Menu tempMenu = (Menu) menu.get(i);
+					if (tempMenu.getMenu_id() == menuId)
+					{
+						if (Menu.SAVE_ACCESS.equals(accessType))
+						{
+							if (tempMenu.getSave_access().equals("no"))
+							{
+								throw new ConstException(
+										ConstException.ERR_CODE_ACCESS_DENIED,
+										ConstException.ERR_MSG_ACCESS_DENIED);
+							} else
+							{
+
+							}
+						}
+						if (Menu.EDIT_ACCESS.equals(accessType))
+						{
+							if (tempMenu.getEdit_access().equals("no"))
+							{
+								throw new ConstException(
+										ConstException.ERR_CODE_ACCESS_DENIED,
+										ConstException.ERR_MSG_ACCESS_DENIED);
+							}
+
+						}
+						if (Menu.DELETE_ACCESS.equals(accessType))
+						{
+							if (tempMenu.getDelete_access().equals("no"))
+							{
+								throw new ConstException(
+										ConstException.ERR_CODE_ACCESS_DENIED,
+										ConstException.ERR_MSG_ACCESS_DENIED);
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception ex)
+		{
+			throw ex;
+		}
+		return isAccessDined;
 	}
 }

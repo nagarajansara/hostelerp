@@ -11,6 +11,12 @@ function CtDAO() {
 
     this.LOGIN_VALIDATE = this.API_PREFIX + "/login/validate.json";
     this.ADD_USERS = this.API_PREFIX + "/manager/addUsers.json";
+    this.DELETE_USERS = this.API_PREFIX + "/manager/deleteUsers.json";
+    this.GET_USERS_VIA_ID = this.API_PREFIX + "/manager/getUsersViaId.json";
+    this.GET_UPDATE_USERS_VIA_ID = this.API_PREFIX
+	    + "/manager/updateUsersViaId.json";
+    this.ADD_STUDENT = this.API_PREFIX
+    + "/manager/addStudent.json";
 
     this.RESPONSE_CACHE = {};
 
@@ -28,9 +34,29 @@ CtDAO.prototype.addUsers = function(postParams, cbk) {
     var tObj = this;
     tObj.getData(tObj.ADD_USERS, postParams, cbk);
 };
+CtDAO.prototype.deleteUsers = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.DELETE_USERS, postParams, cbk);
+};
+CtDAO.prototype.getUsersViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_USERS_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.updateUsersViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_UPDATE_USERS_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.addStudent = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.ADD_STUDENT, postParams, cbk);
+};
 CtDAO.prototype.getData = function(url, postParams, callback, isCacheMap,
 	isParse) {
     $(".hfmsLoader").show();
+    if (localStorage.getItem("menuId") && postParams) {
+	postParams["menuId"] = localStorage.getItem("menuId");
+    }
+
     var tObj = this, cbk = function(data) {
 	if (data && data.model) {
 	    data = data.model;

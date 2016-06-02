@@ -50,6 +50,11 @@ public class Menu implements Serializable
 	private String edit_access;
 	private String delete_access;
 
+
+	public final static String SAVE_ACCESS = "save_access";
+	public final static String EDIT_ACCESS = "edit_access";
+	public final static String DELETE_ACCESS = "delete_access";
+
 	public Menu()
 	{
 
@@ -164,5 +169,6 @@ public class Menu implements Serializable
 	{
 		this.status = status;
 	}
+
 
 }

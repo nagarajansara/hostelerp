@@ -1,20 +1,28 @@
 package hostelerp.com.controller;
 
 import hostelerp.com.datatable.CommonDataTableJsonObj;
+import hostelerp.com.model.CityState;
+import hostelerp.com.model.Menu;
+import hostelerp.com.model.Student;
 import hostelerp.com.model.Users;
 import hostelerp.com.service.LoginService;
 import hostelerp.com.service.ProjectManagerService;
 import hostelerp.com.util.AppProp;
+import hostelerp.com.util.ConstException;
 import hostelerp.com.util.Response;
 import hostelerp.com.util.Utilities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -80,18 +88,34 @@ public class ProjectManagerController extends BaseController
 			@RequestParam("userName") String userName,
 			@RequestParam("password") String password,
 			@RequestParam("firstname") String firstname,
-			@RequestParam("usertype") String usertype, ModelMap model)
+			@RequestParam("usertype") String usertype,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
 			throws Exception
 	{
 		try
 		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
+
 			Users user = new Users(userName, password, firstname, usertype);
 			projectManagerService.addUsers(user);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
 		{
 			logger.error("addUsers :" + ex.getMessage());
-			utilities.setErrResponse(ex, response);
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_INVALID_LOGIN,
+								ConstException.ERR_MSG_INVALID_LOGIN);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+
 		}
 		model.addAttribute("model", response);
 		return "users";
@@ -161,6 +185,294 @@ public class ProjectManagerController extends BaseController
 		}
 		model.addAttribute(json2);
 		return json2;
-
 	}
+
+	// Add management users
+	@RequestMapping(value = "/deleteUsers", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String deleteUsers(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("userId") int userId,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		String STATUS_INACTIVE = "inactive";
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.DELETE_ACCESS, request);
+
+			projectManagerService.deleteUsers(userId, STATUS_INACTIVE);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("addUsers :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "users";
+	}
+
+	@RequestMapping(value = "/getUsersViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getUsersViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("userId") int userId,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			List<Users> list = projectManagerService.getUsersViaId(userId);
+			utilities.setSuccessResponse(response, list);
+		} catch (Exception ex)
+		{
+			logger.error("getUsersViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "users";
+	}
+
+	@RequestMapping(value = "/updateUsersViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateUsersViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("userId") int userId,
+			@RequestParam("userName") String userName,
+			@RequestParam("firstname") String firstname,
+			@RequestParam("usertype") String usertype,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.EDIT_ACCESS, request);
+
+			Users users = new Users(userId, userName, firstname, usertype);
+			projectManagerService.updateUsersViaId(users);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("updateUsersViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "users";
+	}
+
+	/****************************************** Student ***********************************************************/
+
+	@RequestMapping(value = "/get_student", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateUsersViaId(HttpServletRequest request,
+			HttpServletResponse res)
+	{
+		return "student";
+	}
+
+	@RequestMapping(value = "/addStudent", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addStudent(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("name") String name,
+			@RequestParam("rollno") String rollno,
+			@RequestParam("batch") String batch,
+			@RequestParam("course") String course,
+			@RequestParam("messtype") String messtype,
+			@RequestParam("address") String address,
+			@RequestParam("state") String state,
+			@RequestParam("city") String city,
+			@RequestParam("country") String country,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
+
+			Student student =
+					new Student(name, rollno, batch, course, messtype, address,
+							state, city, country);
+			projectManagerService.addStudent(student);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("addStudent :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_INVALID_LOGIN,
+								ConstException.ERR_MSG_INVALID_LOGIN);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+
+		}
+		model.addAttribute("model", response);
+		return "student";
+	}
+
+	// Add management users
+	@RequestMapping(value = "/getStudent", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody String getStudent(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "active";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<Student> studentList = new ArrayList<Student>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+				studentList =
+						projectManagerService.getStudentViaSearchParam(
+								startIndx, maxIndx, STATUS_ACTIVE,
+								searchParameter);
+				numEntries =
+						projectManagerService
+								.getStudentNumEntriesViaSearchParam(
+										STATUS_ACTIVE, searchParameter);
+			} else
+			{
+				studentList =
+						projectManagerService.getStudent(startIndx, maxIndx,
+								STATUS_ACTIVE);
+				numEntries =
+						projectManagerService
+								.getStudentNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<Student>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<Student>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(studentList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getStudent :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+	}
+
+	@RequestMapping(value = "/getCityApi", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getCityApi(HttpServletRequest request, @RequestParam(
+			value = "locationname") String locationname, ModelMap model)
+
+	{
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		JSONArray jSONArray = new JSONArray();
+		boolean isCity = true;
+		try
+		{
+			String status = "active";
+			List<CityState> cityList =
+					projectManagerService.getCityAndState(locationname, status,
+							isCity);
+			if (cityList != null && cityList.size() > 0)
+			{
+				for (int i = 0; i < cityList.size(); i++)
+				{
+					CityState city = (CityState) cityList.get(i);
+					String cityName = (String) city.getName();
+
+					int ID = (Integer) (city.getId());
+					JSONObject jSONObject = new JSONObject();
+
+					jSONObject.put("id", ID);
+					jSONObject.put("text", cityName);
+					jSONArray.put(jSONObject);
+
+				}
+				utilities.setSuccessResponse(response, jSONArray.toString());
+			} else
+			{
+				throw new ConstException(ConstException.ERR_CODE_NO_DATA,
+						ConstException.ERR_MSG_NO_DATA);
+			}
+		} catch (Exception ex)
+		{
+			logger.error("getCity :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", jSONArray.toString());
+		return "student";
+	}
+
+	@RequestMapping(value = "/getStateApi", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getStateApi(HttpServletRequest request, @RequestParam(
+			value = "locationname") String locationname, ModelMap model)
+
+	{
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		JSONArray jSONArray = new JSONArray();
+		boolean isCity = false;
+		try
+		{
+			String status = "active";
+			List<CityState> cityList =
+					projectManagerService.getCityAndState(locationname, status,
+							isCity);
+			if (cityList != null && cityList.size() > 0)
+			{
+				for (int i = 0; i < cityList.size(); i++)
+				{
+					CityState city = (CityState) cityList.get(i);
+					String cityName = (String) city.getName();
+
+					int ID = (Integer) (city.getId());
+					JSONObject jSONObject = new JSONObject();
+
+					jSONObject.put("id", ID);
+					jSONObject.put("text", cityName);
+					jSONArray.put(jSONObject);
+
+				}
+				utilities.setSuccessResponse(response, jSONArray.toString());
+			} else
+			{
+				throw new ConstException(ConstException.ERR_CODE_NO_DATA,
+						ConstException.ERR_MSG_NO_DATA);
+			}
+		} catch (Exception ex)
+		{
+			logger.error("getStateApi :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", jSONArray.toString());
+		return "student";
+	}
+
 }

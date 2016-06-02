@@ -3,6 +3,7 @@ function BmpUtil()
 {
 	this.RESPONSE_STATUS = 200;
 	this.RESPONSE_MSG = "Success";
+	this.INVALID_LOGIN_STATUS = 3;
 };
 BmpUtil.prototype.isTextFieldEmpty = function(jqSelector)
 {
@@ -16,8 +17,8 @@ BmpUtil.prototype.isTextFieldEmpty = function(jqSelector)
 	return isValid;
 };
 BmpUtil.prototype.chkNumber = function(jqSelector, event)
-{	
-	if (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57)) 
+{
+	if (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57))
 	{
 		return false;
 	}
@@ -35,16 +36,16 @@ BmpUtil.prototype.showAlert = function(msg, title)
 		$toast;
 	msg = msg || '';
 	title = title || '';
-	toastr.options = 
+	toastr.options =
 	{
 		closeButton: $('#closeButton').prop('checked'),
 		debug: $('#debugInfo').prop('checked'),
 		positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
 		onclick: null
 	};
-	if ($('#addBehaviorOnToastClick').prop('checked')) 
+	if ($('#addBehaviorOnToastClick').prop('checked'))
 	{
-		toastr.options.onclick = function () 
+		toastr.options.onclick = function ()
 		{
 			alert('You can perform some custom action after a toast goes away');
 		};
@@ -116,7 +117,7 @@ BmpUtil.prototype.validateURL = function(str)
 	return regexp.test(str);
 };
 BmpUtil.prototype.getLastStartingURL = function()
-{	
+{
 	var lastPart = ((location.href.toString()).split("/")).pop();
 	return lastPart;
 };

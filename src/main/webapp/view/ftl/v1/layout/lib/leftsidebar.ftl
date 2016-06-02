@@ -13,7 +13,7 @@
 							 	<ul class="sub">
 							 	<#assign isChild = 1>
 							 </#if>
-								<li><a href="${element.menu_url}">${element.menu_name }</a></li>
+								<li><a pk_id="${element.menu_id}" href="${element.menu_url}">${element.menu_name }</a></li>
 						</#if>
 						<#if  element.parent_id != menu_id && isChild == 1 >
 							</ul>
@@ -24,7 +24,7 @@
 								</li>
 							</#if>
 							 <li>
-								<a href="${baseURL}/${element.menu_url}" class="hfms_${element.menu_name }">
+								<a href="${baseURL}/${element.menu_url}" pk_id="${element.menu_id}" class="hfms_${element.menu_name }">
 									<i class="${element.menu_icon}"></i>
 									<span>${element.menu_name }</span>
 								</a>
