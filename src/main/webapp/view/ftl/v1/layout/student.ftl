@@ -161,10 +161,10 @@
 										placeholder="Mobile No" required jsonKey="mobileno">
 								</div>
 								<div class="form-group hfmsStateParent">
-									<label for="exampleInputEmail1">State</label>
+
 								</div>
 								<div class="form-group hfmsCityParent">
-									<label for="exampleInputEmail1">City</label>
+
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Country</label> <select
@@ -275,32 +275,18 @@
 									    .setParamValue();
 
 								    $(
-									    ".hfmsCityParent input")
-									    .remove();
-								    $(
-									    ".hfmsStateParent input")
-									    .remove();
-
-								    $(
 									    ".hfmsCityParent")
-									    .append(
-										    "<input"
-											    + "style=\"width: 100%;\" type=\"hidden\" data-option=\""
-											    + responseData[0].city
-											    + "\""
-											    + "name=\"locationid\" id=\"hfmsUpdatedCity\" value=\""
-											    + responseData[0].city
-											    + "\">");
+									    .empty();
 								    $(
 									    ".hfmsStateParent")
+									    .empty();
+
+								    $(".hfmsCityParent")
 									    .append(
-										    "<input"
-											    + "style=\"width: 100%;\" type=\"hidden\" data-option=\""
-											    + responseData[0].state
-											    + "\""
-											    + "name=\"locationid\" id=\"hfmsUpdatedState\" value=\""
-											    + responseData[0].state
-											    + "\">");
+										    "<label for=\"exampleInputEmail1\">City</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].city + "\" id=\"hfmsUpdatedCity\" value=\""+ responseData[0].city + "\">");
+
+								    $(".hfmsStateParent")
+									    .append("<label for=\"exampleInputEmail1\">State</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].state + "\" id=\"hfmsUpdatedState\" value=\""+ responseData[0].state + "\">");
 
 								    hfmsSetSelect2(
 									    "#hfmsUpdatedState",
