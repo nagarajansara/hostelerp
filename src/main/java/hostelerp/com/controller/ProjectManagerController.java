@@ -282,6 +282,7 @@ public class ProjectManagerController extends BaseController
 			@RequestParam("state") String state,
 			@RequestParam("city") String city,
 			@RequestParam("country") String country,
+			@RequestParam("mobileno") String mobileno,
 			@RequestParam(value = "menuId", required = false,
 					defaultValue = "0") int menuId, ModelMap model)
 			throws Exception
@@ -293,7 +294,7 @@ public class ProjectManagerController extends BaseController
 
 			Student student =
 					new Student(name, rollno, batch, course, messtype, address,
-							state, city, country);
+							state, city, country, mobileno);
 			projectManagerService.addStudent(student);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
@@ -311,6 +312,90 @@ public class ProjectManagerController extends BaseController
 				utilities.setErrResponse(ex, response);
 			}
 
+		}
+		model.addAttribute("model", response);
+		return "student";
+	}
+
+	@RequestMapping(value = "/getStudentsViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getStudentsViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("studentId") int studentId,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			String status = "active";
+			List<Student> list =
+					projectManagerService.getStudentsViaId(studentId, status);
+			utilities.setSuccessResponse(response, list);
+		} catch (Exception ex)
+		{
+			logger.error("getStudentsViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "student";
+	}
+
+	@RequestMapping(value = "/updateStudensViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateStudensViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("name") String name,
+			@RequestParam("id") int id, @RequestParam("batch") String batch,
+			@RequestParam("course") String course,
+			@RequestParam("messtype") String messtype,
+			@RequestParam("address") String address,
+			@RequestParam("state") String state,
+			@RequestParam("city") String city,
+			@RequestParam("country") String country,
+			@RequestParam("mobileno") String mobileno,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.EDIT_ACCESS, request);
+
+			Student student =
+					new Student(name, batch, course, messtype, address, state,
+							city, country, mobileno, id);
+			projectManagerService.updateStudensViaId(student);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("updateStudensViaId  :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "student";
+	}
+
+	@RequestMapping(value = "/deleteStudentViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String deleteStudentViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("studentId") int studentId,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.DELETE_ACCESS, request);
+			projectManagerService.deleteStudentViaId(studentId);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("deleteStudentViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
 		}
 		model.addAttribute("model", response);
 		return "student";

@@ -37,3 +37,7 @@
 	border-top-color: #1FB5AD !important;
 	color: #ffffff;
 }
+
+.hfmsStateParent div, .hfmsCityParent div {
+	width: 100%;
+}

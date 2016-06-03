@@ -48,14 +48,16 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 	final String GET_STUDENTS =
 			"SELECT *,REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
-					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', id) AS editBtn "
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn "
 					+ "from student where status =:status ORDER BY created_at DESC LIMIT :startIndx, :endIndx";
 	final String GET_STUDENTS_NUMENTRIES =
 			"SELECT count(*) from student where status =:status";
 	final String GET_STUDENT_VIA_SEARCHPARAM =
-			"SELECT *, ,REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
-					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', id) AS editBtn "
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn "
 					+ "from student where status =:status AND "
 					+ "(name LIKE :searchParam OR rollno LIKE :searchParam OR course LIKE :searchParam OR messtype LIKE :searchParam) "
 					+ "ORDER BY created_at LIMIT :startIndx, :endIndx";
@@ -63,8 +65,15 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 			"SELECT count(*) from student where status =:status AND "
 					+ "(name LIKE :searchParam OR rollno LIKE :searchParam OR course LIKE :searchParam OR messtype LIKE :searchParam) ";
 	final String ADD_STUDENT =
-			"INSERT INTO student (name, rollno, batch, course, messtype, address, state, city, country) "
-					+ "VALUES (:name, :rollno, :batch, :course, :messtype, :address, :state, :city, :country)";
+			"INSERT INTO student (name, rollno, batch, course, messtype, address, state, city, country, mobileno) "
+					+ "VALUES (:name, :rollno, :batch, :course, :messtype, :address, :state, :city, :country, :mobileno)";
+	final String GET_STUDENTS_VIA_ID =
+			"Select * from student where id =:id AND status =:status";
+	final String DELETE_STUDENTS_VIA_ID =
+			"Update student set status =:status where id =:id";
+	final String UPDATE_STUDENT_VIA_ID =
+			"UPDATE student set name =:name, batch =:batch, course =:course, "
+					+ "messtype =:messtype, address =:address, state =:state, city =:city, country =:country, mobileno =:mobileno WHERE id =:id";
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -243,9 +252,49 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("state", student.getState());
 		paramMap.put("city", student.getCity());
 		paramMap.put("country", student.getCountry());
+		paramMap.put("mobileno", student.getMobileno());
 
 		namedParameterJdbcTemplate.update(ADD_STUDENT, paramMap);
 
+	}
+
+	@Override
+	public List<Student> getStudentsViaId(int studentId, String status)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", studentId);
+		paramMap.put("status", status);
+		return namedParameterJdbcTemplate.query(GET_STUDENTS_VIA_ID, paramMap,
+				new BeanPropertyRowMapper(Student.class));
+	}
+
+	@Override
+	public void deleteStudentViaId(int studentId) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", "deactive");
+		paramMap.put("id", studentId);
+
+		namedParameterJdbcTemplate.update(DELETE_STUDENTS_VIA_ID, paramMap);
+	}
+
+	@Override
+	public void updateStudensViaId(Student student) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", student.getName());
+		paramMap.put("batch", student.getBatch());
+		paramMap.put("course", student.getCourse());
+		paramMap.put("messtype", student.getMesstype());
+		paramMap.put("address", student.getAddress());
+		paramMap.put("state", student.getState());
+		paramMap.put("city", student.getCity());
+		paramMap.put("country", student.getCountry());
+		paramMap.put("mobileno", student.getMobileno());
+		paramMap.put("id", student.getId());
+
+		namedParameterJdbcTemplate.update(UPDATE_STUDENT_VIA_ID, paramMap);
 	}
 
 }

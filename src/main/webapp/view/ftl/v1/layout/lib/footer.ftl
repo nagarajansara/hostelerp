@@ -20,8 +20,9 @@
 <script src="${baseURL}/assest/util/hfmsutils.js"></script>
 
 <script src="${baseURL}/assest/plugin/parsely.js"></script>
+<script src="${baseURL}/assest/js/hostelerp.js"></script>
 </body>
 </html>
 <script type="text/javascript">
-	$(".dcjq-parent-li").addClass("sub-menu");
+    $(".dcjq-parent-li").addClass("sub-menu");
 </script>

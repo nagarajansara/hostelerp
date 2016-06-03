@@ -15,6 +15,17 @@ public class Student implements Serializable
 	private String state;
 	private String city;
 	private String country;
+	private String mobileno;
+
+	public String getMobileno()
+	{
+		return mobileno;
+	}
+
+	public void setMobileno(String mobileno)
+	{
+		this.mobileno = mobileno;
+	}
 
 	public String getEditBtn()
 	{
@@ -157,7 +168,7 @@ public class Student implements Serializable
 
 	public Student(String name, String rollno, String batch, String course,
 			String messtype, String address, String state, String city,
-			String country)
+			String country, String mobileno)
 	{
 		this.name = name;
 		this.rollno = rollno;
@@ -168,5 +179,22 @@ public class Student implements Serializable
 		this.state = state;
 		this.city = city;
 		this.country = country;
+		this.mobileno = mobileno;
+	}
+
+	public Student(String name, String batch, String course, String messtype,
+			String address, String state, String city, String country,
+			String mobileno, int id)
+	{
+		this.name = name;
+		this.batch = batch;
+		this.course = course;
+		this.messtype = messtype;
+		this.address = address;
+		this.state = state;
+		this.city = city;
+		this.country = country;
+		this.mobileno = mobileno;
+		this.id = id;
 	}
 }

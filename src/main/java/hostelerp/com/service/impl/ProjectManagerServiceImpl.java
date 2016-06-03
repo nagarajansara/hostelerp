@@ -119,4 +119,24 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 
 	}
 
+	@Override
+	public List<Student> getStudentsViaId(int studentId, String status)
+			throws Exception
+	{
+		return projectManagerDAO.getStudentsViaId(studentId, status);
+	}
+
+	@Override
+	public void deleteStudentViaId(int studentId) throws Exception
+	{
+		projectManagerDAO.deleteStudentViaId(studentId);
+	}
+
+	@Override
+	public void updateStudensViaId(Student student) throws Exception
+	{
+		// TODO Auto-generated method stub
+		projectManagerDAO.updateStudensViaId(student);
+	}
+
 }

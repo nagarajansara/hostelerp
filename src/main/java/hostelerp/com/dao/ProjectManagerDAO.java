@@ -47,4 +47,11 @@ public interface ProjectManagerDAO
 
 	void addStudent(Student student) throws Exception;
 
+	List<Student> getStudentsViaId(int studentId, String status)
+			throws Exception;
+
+	void deleteStudentViaId(int studentId) throws Exception;
+
+	void updateStudensViaId(Student student) throws Exception;
+
 }

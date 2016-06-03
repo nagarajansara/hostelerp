@@ -15,8 +15,10 @@ function CtDAO() {
     this.GET_USERS_VIA_ID = this.API_PREFIX + "/manager/getUsersViaId.json";
     this.GET_UPDATE_USERS_VIA_ID = this.API_PREFIX
 	    + "/manager/updateUsersViaId.json";
-    this.ADD_STUDENT = this.API_PREFIX
-    + "/manager/addStudent.json";
+    this.ADD_STUDENT = this.API_PREFIX + "/manager/addStudent.json";
+    this.DELETE_STUDENT = this.API_PREFIX + "/manager/deleteStudentViaId.json";
+    this.GET_STUDENT_VIA_ID = this.API_PREFIX + "/manager/getStudentsViaId.json";
+    this.UPDATE_STUDENT_VIA_ID = this.API_PREFIX + "/manager/updateStudensViaId.json";
 
     this.RESPONSE_CACHE = {};
 
@@ -49,6 +51,18 @@ CtDAO.prototype.updateUsersViaId = function(postParams, cbk) {
 CtDAO.prototype.addStudent = function(postParams, cbk) {
     var tObj = this;
     tObj.getData(tObj.ADD_STUDENT, postParams, cbk);
+};
+CtDAO.prototype.deleteStudent = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.DELETE_STUDENT, postParams, cbk);
+};
+CtDAO.prototype.getStudentViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_STUDENT_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.updateStudensViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.UPDATE_STUDENT_VIA_ID, postParams, cbk);
 };
 CtDAO.prototype.getData = function(url, postParams, callback, isCacheMap,
 	isParse) {
