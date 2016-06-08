@@ -14,6 +14,7 @@ public class ConstException extends Exception
 	public static int ERR_CODE_NO_DATA = 21;
 	public static int ERR_CODE_NO_CREDITS = 22;
 	public static int ERR_CODE_ACCESS_DENIED = 25;
+	public static int ERR_CODE_DUPLICATE_ENTERY = 26;
 
 	public static String ERR_MSG_SUCCESS = "Success";
 	public static String ERR_MSG_SESSION_EXP = "Session expired";
@@ -25,6 +26,7 @@ public class ConstException extends Exception
 	public static String ERR_MSG_NO_DATA = "No data found";
 	public static String ERR_MSG_NO_CREDITS = "No credits";
 	public static String ERR_MSG_ACCESS_DENIED = "Access Denied";
+	public static String ERR_MSG_DUPLICATE_ENTERY = "User already registered";
 
 	int code = this.ERR_CODE_UNKNOWN;
 

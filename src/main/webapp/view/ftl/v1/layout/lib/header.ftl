@@ -16,7 +16,7 @@
 <meta name="author" content="ThemeBucket">
 <link rel="shortcut icon" href="images/favicon.png">
 
-<title>Blank page</title>
+<title>Hostel ERP</title>
 
 <!--Core CSS -->
 <link href="${baseURL}/theme/bs3/css/bootstrap.min.css" rel="stylesheet">

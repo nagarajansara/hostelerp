@@ -73,7 +73,61 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 			"Update student set status =:status where id =:id";
 	final String UPDATE_STUDENT_VIA_ID =
 			"UPDATE student set name =:name, batch =:batch, course =:course, "
-					+ "messtype =:messtype, address =:address, state =:state, city =:city, country =:country, mobileno =:mobileno WHERE id =:id";
+					+ "messtype =:messtype, address =:address, state =:state, city =:city, country =:country, mobileno =:mobileno, rollno =:rollno WHERE id =:id";
+	final String GET_HOSTELS =
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn from hostel where status =:status ORDER BY createdat DESC LIMIT :startIndx, :maxIndx";
+	final String GET_HOSTEL_NUMENTRIES =
+			"Select count(*) from hostel where status =:status";
+	final String GET_HOSTELS_VIA_SEARCH_PARAMETER =
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn from hostel where status =:status AND (name LIKE :searchParam OR collegename LIKE :searchParam) "
+					+ "ORDER BY createdat DESC LIMIT :startIndx, :maxIndx";
+	final String GET_SEARCHPARAM_HOSTEL_NUMENTRIES =
+			"Select count(*) from hostel where status =:status AND (name LIKE :searchParam OR collegename LIKE :searchParam)";
+	final String GET_COLLEGES =
+			"SELECT * from college where status =:status AND name LIKE :name";
+	final String ADD_HOSTEL =
+			"INSERT INTO hostel (name, collegename, mobileno, address, state, city, country) "
+					+ "values(:name, :collegename, :mobileno, :address, :state, :city, :country)";
+	final String GET_HOSTEL_VIA_ID =
+			"Select * from hostel where status =:status AND id =:id";
+	final String UPDATE_HOSTEL_VIA_ID =
+			"Update hostel set name =:name, "
+					+ "collegename =:collegename, mobileno =:mobileno, address =:address, "
+					+ "state =:state, city =:city, country =:country where id =:id";
+	final String DELETE_HOSTEL_VIA_ID =
+			"Update hostel set status =:status where id =:id";
+	final String GET_BLOCKS =
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <!--<button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', id) AS editBtn from block where status =:status "
+					+ "ORDER BY createdat DESC LIMIT :startIndx, :endIndx";
+	final String GET_BLOCKS_NUMENTRIES =
+			"SELECT count(*) from block where status =:status ";
+	final String GET_BLOCKS_VIA_SEARCHPARAM =
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <!--<button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', id) AS editBtn from block where status =:status  AND (hostelname LIKE :searchParameter OR blockname LIKE :searchParameter) "
+					+ "ORDER BY createdat DESC LIMIT :startIndx, :endIndx";
+	final String GET_BLOCKS_VIA_SEARCHPARAM_NUMENTRIES =
+			"SELECT count(*) from block where status =:status  AND (hostelname LIKE :searchParameter OR blockname LIKE :searchParameter) ";
+	final String GET_HOSTEL_NAME_API =
+			"SELECT name from hostel where status =:status AND (name LIKE :hostelname)";
+	final String ADD_BLOCK =
+			"INSERT INTO block (hostelname, blockname, nooffloor) values (:hostelname, :blockname, :nooffloor)";
+	final String GET_BLOCKS_VIA_ID =
+			"Select * from block where status =:status AND id =:id";
+	final String UPDATE_BLOCKS_VIA_ID =
+			"UPdate block set hostelname =:hostelname, blockname =:blockname, nooffloor =:nooffloor where id =:id";
+	final String DELETE_BLOCK_VIA_ID =
+			"Update block set status =:status where id =:id";
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -293,8 +347,235 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("country", student.getCountry());
 		paramMap.put("mobileno", student.getMobileno());
 		paramMap.put("id", student.getId());
+		paramMap.put("rollno", student.getRollno());
 
 		namedParameterJdbcTemplate.update(UPDATE_STUDENT_VIA_ID, paramMap);
+	}
+
+	@Override
+	public List<Hostel> getHostels(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("maxIndx", maxIndx);
+		paramMap.put("status", sTATUS_ACTIVE);
+
+		return namedParameterJdbcTemplate.query(GET_HOSTELS, paramMap,
+				new BeanPropertyRowMapper<Hostel>(Hostel.class));
+	}
+
+	@Override
+	public List<Hostel> getHostelsViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("maxIndx", maxIndx);
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParam", searchParameter + "%");
+
+		return namedParameterJdbcTemplate.query(
+				GET_HOSTELS_VIA_SEARCH_PARAMETER, paramMap,
+				new BeanPropertyRowMapper<Hostel>(Hostel.class));
+	}
+
+	@Override
+	public List<Hostel> getCollegeNameApi(String locationname, String status)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", locationname + "%");
+		paramMap.put("status", status);
+
+		return namedParameterJdbcTemplate.query(GET_COLLEGES, paramMap,
+				new BeanPropertyRowMapper(Hostel.class));
+	}
+
+	@Override
+	public void addHostel(Hostel hostel) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", hostel.getName());
+		paramMap.put("collegename", hostel.getCollegename());
+		paramMap.put("mobileno", hostel.getMobileno());
+		paramMap.put("address", hostel.getAddress());
+		paramMap.put("state", hostel.getState());
+		paramMap.put("city", hostel.getCity());
+		paramMap.put("country", hostel.getCountry());
+
+		namedParameterJdbcTemplate.update(ADD_HOSTEL, paramMap);
+	}
+
+	@Override
+	public List<Hostel> getHostelViaId(int hostelId, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("id", hostelId);
+
+		return namedParameterJdbcTemplate.query(GET_HOSTEL_VIA_ID, paramMap,
+				new BeanPropertyRowMapper(Hostel.class));
+	}
+
+	@Override
+	public void updateHostelViaId(Hostel hostel) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", hostel.getName());
+		paramMap.put("collegename", hostel.getCollegename());
+		paramMap.put("mobileno", hostel.getMobileno());
+		paramMap.put("address", hostel.getAddress());
+		paramMap.put("state", hostel.getState());
+		paramMap.put("city", hostel.getCity());
+		paramMap.put("country", hostel.getCountry());
+		paramMap.put("id", hostel.getId());
+
+		namedParameterJdbcTemplate.update(UPDATE_HOSTEL_VIA_ID, paramMap);
+
+	}
+
+	@Override
+	public int getHostelsNumEntries(String status) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", status);
+
+		return namedParameterJdbcTemplate.queryForInt(GET_HOSTEL_NUMENTRIES,
+				paramMap);
+
+	}
+
+	@Override
+	public int getHostelsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParam", searchParameter + "%");
+
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_SEARCHPARAM_HOSTEL_NUMENTRIES, paramMap);
+
+	}
+
+	@Override
+	public void deleteHostelViaId(int hostelId, String sTATUS_DEACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_DEACTIVE);
+		paramMap.put("id", hostelId);
+
+		namedParameterJdbcTemplate.update(DELETE_HOSTEL_VIA_ID, paramMap);
+	}
+
+	@Override
+	public List<Block> getBlocks(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+
+		return namedParameterJdbcTemplate.query(GET_BLOCKS, paramMap,
+				new BeanPropertyRowMapper(Block.class));
+	}
+
+	@Override
+	public int getBlocksNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.queryForInt(GET_BLOCKS_NUMENTRIES,
+				paramMap);
+	}
+
+	@Override
+	public List<Block> getBlocksViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+		paramMap.put("searchParameter", searchParameter + "%");
+
+		return namedParameterJdbcTemplate.query(GET_BLOCKS_VIA_SEARCHPARAM,
+				paramMap, new BeanPropertyRowMapper(Block.class));
+
+	}
+
+	@Override
+	public int getBlocksViaSearchParamNumEntriesViaSearchParam(
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParameter", searchParameter + "%");
+
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_BLOCKS_VIA_SEARCHPARAM_NUMENTRIES, paramMap);
+	}
+
+	@Override
+	public List<Hostel> getHostelNameApi(String locationname, String status)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", status);
+		paramMap.put("hostelname", locationname + "%");
+
+		return namedParameterJdbcTemplate.query(GET_HOSTEL_NAME_API, paramMap,
+				new BeanPropertyRowMapper(Hostel.class));
+	}
+
+	@Override
+	public void addBlock(Block block) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("hostelname", block.getHostelname());
+		paramMap.put("blockname", block.getBlockname());
+		paramMap.put("nooffloor", block.getNooffloor());
+
+		namedParameterJdbcTemplate.update(ADD_BLOCK, paramMap);
+	}
+
+	@Override
+	public List<Block> getBlockViaId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("id", id);
+		return namedParameterJdbcTemplate.query(GET_BLOCKS_VIA_ID, paramMap,
+				new BeanPropertyRowMapper(Block.class));
+
+	}
+
+	@Override
+	public void updateBlockViaId(Block block) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("hostelname", block.getHostelname());
+		paramMap.put("blockname", block.getBlockname());
+		paramMap.put("nooffloor", block.getNooffloor());
+		paramMap.put("id", block.getId());
+
+		namedParameterJdbcTemplate.update(UPDATE_BLOCKS_VIA_ID, paramMap);
+	}
+
+	@Override
+	public void deleteBlockViaId(int id, String status) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", status);
+		paramMap.put("id", id);
+
+		namedParameterJdbcTemplate.update(DELETE_BLOCK_VIA_ID, paramMap);
+
 	}
 
 }

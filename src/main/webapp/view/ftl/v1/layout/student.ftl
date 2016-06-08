@@ -126,7 +126,7 @@
 								<div class="form-group">
 									<label for="exampleInputEmail1">Roll No</label> <input
 										type="text" class="form-control hfmsUpdatedRollno"
-										placeholder="RollNo" required jsonKey="rollno" disabled>
+										placeholder="RollNo" required jsonKey="rollno">
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Batch</label> <input
@@ -160,12 +160,8 @@
 										type="text" class="form-control hfmsUpdatedMobileNo"
 										placeholder="Mobile No" required jsonKey="mobileno">
 								</div>
-								<div class="form-group hfmsStateParent">
-
-								</div>
-								<div class="form-group hfmsCityParent">
-
-								</div>
+								<div class="form-group hfmsStateParent"></div>
+								<div class="form-group hfmsCityParent"></div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Country</label> <select
 										class="form-control m-bot15 hfmsUpdatedCountry"
@@ -204,8 +200,27 @@
     hfmsSetSelect2("#hfmsState", 'http://' + location.host + '/'
 	    + ctDAO.CONTEXT_NAME + '/api/manager/getStateApi.json');
 
+    var aoColumns = [
+                     {
+				    "mData" : "name",
+				    'bSortable' : false
+				}, {
+				    "mData" : "rollno",
+				    'bSortable' : false
+				}, {
+				    "mData" : "messtype",
+				    'bSortable' : false
+				}, {
+				    "mData" : "mobileno",
+				    'bSortable' : false
+				}, {
+				    "mData" : "editBtn",
+				    'bSortable' : false
+				    },
+				];
+
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
-	    + "${baseURL}/api/manager/getStudent");
+	    + "${baseURL}/api/manager/getStudent", aoColumns);
 
     $(document)
 	    .ready(
@@ -221,6 +236,13 @@
 			    $(".hfmsUpdateRow").hide();
 			    $(".hfmsShowStudentDataRow").show();
 			});
+
+			$(document).on("click", ".hfmsInfo", function(){
+			    var studentId = $(this).attr("pk_id"),
+			    		URL = "http://"+ location.host + "${baseURL}/api/manager/getStudentsViaId?studentId="+studentId;
+			    window.open(URL, '_blank');
+			});
+
 
 			$(document)
 				.on(
@@ -400,11 +422,7 @@
 										&& data.responseStatus == bmpUtil.RESPONSE_STATUS) {
 									    alert("Student added successfully");
 									} else {
-									    if (data.responseStatus == bmpUtil.INVALID_LOGIN_STATUS) {
-										alert("User already registered");
-									    } else {
-										alert(data.responseMsg);
-									    }
+									    alert(data.responseMsg);
 									}
 								    });
 						} else {

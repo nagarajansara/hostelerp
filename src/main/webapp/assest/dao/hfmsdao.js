@@ -17,8 +17,22 @@ function CtDAO() {
 	    + "/manager/updateUsersViaId.json";
     this.ADD_STUDENT = this.API_PREFIX + "/manager/addStudent.json";
     this.DELETE_STUDENT = this.API_PREFIX + "/manager/deleteStudentViaId.json";
-    this.GET_STUDENT_VIA_ID = this.API_PREFIX + "/manager/getStudentsViaId.json";
-    this.UPDATE_STUDENT_VIA_ID = this.API_PREFIX + "/manager/updateStudensViaId.json";
+    this.GET_STUDENT_VIA_ID = this.API_PREFIX
+	    + "/manager/getStudentsViaId.json";
+    this.UPDATE_STUDENT_VIA_ID = this.API_PREFIX
+	    + "/manager/updateStudensViaId.json";
+    this.ADD_HOSTEL = this.API_PREFIX + "/manager/addHostel.json";
+    this.GET_HOSTEL_VIA_ID = this.API_PREFIX + "/manager/getHostelViaId.json";
+    this.UPDATE_HOSTEL_VIA_ID = this.API_PREFIX
+	    + "/manager/updateHostelViaId.json";
+    this.DELETE_HOSTEL_VIA_ID = this.API_PREFIX
+	    + "/manager/deleteHostelViaId.json";
+    this.ADD_BLOCK = this.API_PREFIX + "/manager/addBlock.json";
+    this.GET_BLOCK_VIA_ID = this.API_PREFIX + "/manager/getBlockViaId.json";
+    this.UPADTE_BLOCK_VIA_ID = this.API_PREFIX
+	    + "/manager/updateBlockViaId.json";
+    this.DELETE_BLOCK_VIA_ID = this.API_PREFIX
+	    + "/manager/deleteBlockViaId.json";
 
     this.RESPONSE_CACHE = {};
 
@@ -64,6 +78,39 @@ CtDAO.prototype.updateStudensViaId = function(postParams, cbk) {
     var tObj = this;
     tObj.getData(tObj.UPDATE_STUDENT_VIA_ID, postParams, cbk);
 };
+CtDAO.prototype.addHostel = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.ADD_HOSTEL, postParams, cbk);
+};
+CtDAO.prototype.getHostelViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_HOSTEL_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.updateHostelViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.UPDATE_HOSTEL_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.deleteHostelViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.DELETE_HOSTEL_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.addBlock = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.ADD_BLOCK, postParams, cbk);
+};
+CtDAO.prototype.getBlockViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_BLOCK_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.updateBlockViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.UPADTE_BLOCK_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.deleteBlockViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.DELETE_BLOCK_VIA_ID, postParams, cbk);
+};
+
 CtDAO.prototype.getData = function(url, postParams, callback, isCacheMap,
 	isParse) {
     $(".hfmsLoader").show();

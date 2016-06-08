@@ -53,4 +53,50 @@ public interface ProjectManagerService
 
 	void updateStudensViaId(Student student) throws Exception;
 
+	List<Hostel> getHostels(int startIndx, int maxIndx, String sTATUS_ACTIVE)
+			throws Exception;
+
+	List<Hostel> getHostelsViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception;
+
+	List<Hostel> getCollegeNameApi(String locationname, String status)
+			throws Exception;
+
+	void addHostel(Hostel hostel) throws Exception;
+
+	List<Hostel> getHostelViaId(int hostelId, String sTATUS_ACTIVE)
+			throws Exception;
+
+	void updateHostelViaId(Hostel hostel) throws Exception;
+
+	int getHostelsNumEntries(String sTATUS_ACTIVE) throws Exception;
+
+	int getHostelsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception;
+
+	void deleteHostelViaId(int hostelId, String sTATUS_DEACTIVE)
+			throws Exception;
+
+	List<Block> getBlocks(int startIndx, int maxIndx, String sTATUS_ACTIVE)
+			throws Exception;
+
+	int getBlocksNumEntries(String sTATUS_ACTIVE) throws Exception;
+
+	List<Block> getBlocksViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception;
+
+	int getBlocksViaSearchParamNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception;
+
+	List<Hostel> getHostelNameApi(String locationname, String status)
+			throws Exception;
+
+	void addBlock(Block block) throws Exception;
+
+	List<Block> getBlockViaId(int id, String sTATUS_ACTIVE) throws Exception;
+
+	void updateBlockViaId(Block block) throws Exception;
+
+	void deleteBlockViaId(int id, String status) throws Exception;
+
 }

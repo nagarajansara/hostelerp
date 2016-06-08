@@ -1,7 +1,9 @@
 package hostelerp.com.controller;
 
 import hostelerp.com.datatable.CommonDataTableJsonObj;
+import hostelerp.com.model.Block;
 import hostelerp.com.model.CityState;
+import hostelerp.com.model.Hostel;
 import hostelerp.com.model.Menu;
 import hostelerp.com.model.Student;
 import hostelerp.com.model.Users;
@@ -20,6 +22,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.Host;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -108,8 +111,8 @@ public class ProjectManagerController extends BaseController
 			{
 				ConstException constException =
 						new ConstException(
-								ConstException.ERR_CODE_INVALID_LOGIN,
-								ConstException.ERR_MSG_INVALID_LOGIN);
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
 				utilities.setErrResponse(constException, response);
 			} else
 			{
@@ -337,7 +340,7 @@ public class ProjectManagerController extends BaseController
 			utilities.setErrResponse(ex, response);
 		}
 		model.addAttribute("model", response);
-		return "student";
+		return "studentdetailspage";
 	}
 
 	@RequestMapping(value = "/updateStudensViaId", method =
@@ -345,6 +348,7 @@ public class ProjectManagerController extends BaseController
 	public String updateStudensViaId(HttpServletRequest request,
 			HttpServletResponse res, @RequestParam("name") String name,
 			@RequestParam("id") int id, @RequestParam("batch") String batch,
+			@RequestParam("rollno") String rollno,
 			@RequestParam("course") String course,
 			@RequestParam("messtype") String messtype,
 			@RequestParam("address") String address,
@@ -363,14 +367,24 @@ public class ProjectManagerController extends BaseController
 
 			Student student =
 					new Student(name, batch, course, messtype, address, state,
-							city, country, mobileno, id);
+							city, country, mobileno, id, rollno);
 			projectManagerService.updateStudensViaId(student);
 			utilities.setSuccessResponse(response);
 
 		} catch (Exception ex)
 		{
 			logger.error("updateStudensViaId  :" + ex.getMessage());
-			utilities.setErrResponse(ex, response);
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
 		}
 		model.addAttribute("model", response);
 		return "student";
@@ -560,4 +574,506 @@ public class ProjectManagerController extends BaseController
 		return "student";
 	}
 
+	// Add management users
+	@RequestMapping(value = "/getHostels", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody String getHostels(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "active";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<Hostel> hostelList = new ArrayList<Hostel>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+				hostelList =
+						projectManagerService.getHostelsViaSearchParam(
+								startIndx, maxIndx, STATUS_ACTIVE,
+								searchParameter);
+				numEntries =
+						projectManagerService
+								.getHostelsNumEntriesViaSearchParam(
+										STATUS_ACTIVE, searchParameter);
+			} else
+			{
+				hostelList =
+						projectManagerService.getHostels(startIndx, maxIndx,
+								STATUS_ACTIVE);
+				numEntries =
+						projectManagerService
+								.getHostelsNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<Hostel>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<Hostel>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(hostelList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getHostels :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+	}
+
+	@RequestMapping(value = "/get_hostel", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public
+			String get_hostel(HttpServletRequest request,
+					HttpServletResponse res)
+	{
+		return "hostel";
+	}
+
+	@RequestMapping(value = "/getCollegeNameApi", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getCollegeNameApi(HttpServletRequest request, @RequestParam(
+			value = "locationname") String locationname, ModelMap model)
+
+	{
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		JSONArray jSONArray = new JSONArray();
+		boolean isCity = true;
+		try
+		{
+			String status = "active";
+			List<Hostel> cityList =
+					projectManagerService.getCollegeNameApi(locationname,
+							status);
+			if (cityList != null && cityList.size() > 0)
+			{
+				for (int i = 0; i < cityList.size(); i++)
+				{
+					Hostel city = (Hostel) cityList.get(i);
+					String cityName = (String) city.getName();
+
+					int ID = (Integer) (city.getId());
+					JSONObject jSONObject = new JSONObject();
+
+					jSONObject.put("id", ID);
+					jSONObject.put("text", cityName);
+					jSONArray.put(jSONObject);
+
+				}
+				utilities.setSuccessResponse(response, jSONArray.toString());
+			} else
+			{
+				throw new ConstException(ConstException.ERR_CODE_NO_DATA,
+						ConstException.ERR_MSG_NO_DATA);
+			}
+		} catch (Exception ex)
+		{
+			logger.error("getCollegeNameApi :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", jSONArray.toString());
+		return "hostel";
+	}
+
+	@RequestMapping(value = "/addHostel", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addHostel(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("name") String name,
+			@RequestParam("collegename") String collegename,
+			@RequestParam("mobileno") String mobileno,
+			@RequestParam("address") String address,
+			@RequestParam("city") String city,
+			@RequestParam("state") String state,
+			@RequestParam("country") String country,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
+			Hostel hostel =
+					new Hostel(name, collegename, mobileno, address, state,
+							city, country);
+			projectManagerService.addHostel(hostel);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("addHostel :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+		}
+		model.addAttribute("model", response);
+		return "hostel";
+	}
+
+	@RequestMapping(value = "/getHostelViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getHostelViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("hostelId") int hostelId,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<Hostel> hostels =
+					projectManagerService.getHostelViaId(hostelId,
+							STATUS_ACTIVE);
+			utilities.setSuccessResponse(response, hostels);
+		} catch (Exception ex)
+		{
+			logger.error("getHostelViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+
+		}
+		model.addAttribute("model", response);
+		return "hosteldetailspage";
+	}
+
+	@RequestMapping(value = "/updateHostelViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateHostelViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("name") String name,
+			@RequestParam("id") int id,
+			@RequestParam("collegename") String collegename,
+			@RequestParam("mobileno") String mobileno,
+			@RequestParam("address") String address,
+			@RequestParam("city") String city,
+			@RequestParam("state") String state,
+			@RequestParam("country") String country,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.EDIT_ACCESS, request);
+			Hostel hostel =
+					new Hostel(name, collegename, mobileno, address, state,
+							city, country, id);
+			projectManagerService.updateHostelViaId(hostel);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("updateHostelViaId :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+		}
+		model.addAttribute("model", response);
+		return "hostel";
+	}
+
+	@RequestMapping(value = "/deleteHostelViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String deleteHostelViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("hostelId") int hostelId,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.DELETE_ACCESS, request);
+			String STATUS_DEACTIVE = "deactive";
+			projectManagerService.deleteHostelViaId(hostelId, STATUS_DEACTIVE);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("deleteHostelViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "hostel";
+
+	}
+
+	@RequestMapping(value = "/getBlocks", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody String getBlocks(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "active";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<Block> blockList = new ArrayList<Block>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+				blockList =
+						projectManagerService.getBlocksViaSearchParam(
+								startIndx, maxIndx, STATUS_ACTIVE,
+								searchParameter);
+				numEntries =
+						projectManagerService
+								.getBlocksViaSearchParamNumEntriesViaSearchParam(
+										STATUS_ACTIVE, searchParameter);
+			} else
+			{
+				blockList =
+						projectManagerService.getBlocks(startIndx, maxIndx,
+								STATUS_ACTIVE);
+				numEntries =
+						projectManagerService
+								.getBlocksNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<Block>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<Block>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(blockList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getHostels :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+
+	}
+
+	@RequestMapping(value = "/getHostelNameApi", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getHostelNameApi(HttpServletRequest request, @RequestParam(
+			value = "locationname") String locationname, ModelMap model)
+
+	{
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		JSONArray jSONArray = new JSONArray();
+		boolean isCity = true;
+		try
+		{
+			String status = "active";
+			List<Hostel> cityList =
+					projectManagerService
+							.getHostelNameApi(locationname, status);
+			if (cityList != null && cityList.size() > 0)
+			{
+				for (int i = 0; i < cityList.size(); i++)
+				{
+					Hostel city = (Hostel) cityList.get(i);
+					String cityName = (String) city.getName();
+
+					int ID = (Integer) (city.getId());
+					JSONObject jSONObject = new JSONObject();
+
+					jSONObject.put("id", ID);
+					jSONObject.put("text", cityName);
+					jSONArray.put(jSONObject);
+
+				}
+				utilities.setSuccessResponse(response, jSONArray.toString());
+			} else
+			{
+				throw new ConstException(ConstException.ERR_CODE_NO_DATA,
+						ConstException.ERR_MSG_NO_DATA);
+			}
+		} catch (Exception ex)
+		{
+			logger.error("getHostelNameApi :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", jSONArray.toString());
+		return "hostel";
+	}
+
+	@RequestMapping(value = "/get_block", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public
+			String
+			get_block(HttpServletRequest request, HttpServletResponse res)
+	{
+		return "block";
+	}
+
+	@RequestMapping(value = "/addBlock", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addBlock(HttpServletRequest request, HttpServletResponse res,
+			@RequestParam("hostelname") String hostelname,
+			@RequestParam("blockname") String blockname,
+			@RequestParam("nooffloor") int nooffloor,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
+			Block block = new Block(hostelname, blockname, nooffloor);
+			projectManagerService.addBlock(block);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("addBlock :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+		}
+		model.addAttribute("model", response);
+		return "block";
+	}
+
+	@RequestMapping(value = "/getBlockViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getBlockViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("id") int id,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<Block> list =
+					projectManagerService.getBlockViaId(id, STATUS_ACTIVE);
+			utilities.setSuccessResponse(response, list);
+		} catch (Exception ex)
+		{
+			logger.error("getBlockViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "block";
+	}
+
+	@RequestMapping(value = "/updateBlockViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateBlockViaId(HttpServletRequest request,
+			HttpServletResponse res,
+			@RequestParam("hostelname") String hostelname,
+			@RequestParam("blockname") String blockname,
+			@RequestParam("nooffloor") int nooffloor,
+			@RequestParam("id") int id, @RequestParam(value = "menuId",
+					required = false, defaultValue = "0") int menuId,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.EDIT_ACCESS, request);
+			Block block = new Block(hostelname, blockname, nooffloor, id);
+			projectManagerService.updateBlockViaId(block);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("updateBlockViaId :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+		}
+		model.addAttribute("model", response);
+		return "block";
+	}
+
+	@RequestMapping(value = "/deleteBlockViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String deleteBlockViaId(HttpServletRequest request,
+			HttpServletResponse res, @RequestParam("id") int id,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, ModelMap model)
+			throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.DELETE_ACCESS, request);
+			String status = "deactive";
+			projectManagerService.deleteBlockViaId(id, status);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("deleteBlockViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "block";
+	}
 }

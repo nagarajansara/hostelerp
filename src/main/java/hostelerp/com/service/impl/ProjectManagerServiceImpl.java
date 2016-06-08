@@ -1,7 +1,9 @@
 package hostelerp.com.service.impl;
 
 import hostelerp.com.dao.ProjectManagerDAO;
+import hostelerp.com.model.Block;
 import hostelerp.com.model.CityState;
+import hostelerp.com.model.Hostel;
 import hostelerp.com.model.Student;
 import hostelerp.com.model.Users;
 import hostelerp.com.service.ProjectManagerService;
@@ -135,8 +137,135 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 	@Override
 	public void updateStudensViaId(Student student) throws Exception
 	{
-		// TODO Auto-generated method stub
+
 		projectManagerDAO.updateStudensViaId(student);
+	}
+
+	@Override
+	public List<Hostel> getHostels(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getHostels(startIndx, maxIndx, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<Hostel> getHostelsViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getHostelsViaSearchParam(startIndx, maxIndx,
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public List<Hostel> getCollegeNameApi(String locationname, String status)
+			throws Exception
+	{
+
+		return projectManagerDAO.getCollegeNameApi(locationname, status);
+	}
+
+	@Override
+	public void addHostel(Hostel hostel) throws Exception
+	{
+		projectManagerDAO.addHostel(hostel);
+	}
+
+	@Override
+	public List<Hostel> getHostelViaId(int hostelId, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getHostelViaId(hostelId, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public void updateHostelViaId(Hostel hostel) throws Exception
+	{
+		projectManagerDAO.updateHostelViaId(hostel);
+	}
+
+	@Override
+	public int getHostelsNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getHostelsNumEntries(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public int getHostelsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getHostelsNumEntriesViaSearchParam(
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public void deleteHostelViaId(int hostelId, String sTATUS_DEACTIVE)
+			throws Exception
+	{
+		projectManagerDAO.deleteHostelViaId(hostelId, sTATUS_DEACTIVE);
+
+	}
+
+	@Override
+	public List<Block> getBlocks(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getBlocks(startIndx, maxIndx, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public int getBlocksNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getBlocksNumEntries(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<Block> getBlocksViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getBlocksViaSearchParam(startIndx, maxIndx,
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public int getBlocksViaSearchParamNumEntriesViaSearchParam(
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO
+				.getBlocksViaSearchParamNumEntriesViaSearchParam(sTATUS_ACTIVE,
+						searchParameter);
+	}
+
+	@Override
+	public List<Hostel> getHostelNameApi(String locationname, String status)
+			throws Exception
+	{
+		return projectManagerDAO.getHostelNameApi(locationname, status);
+	}
+
+	@Override
+	public void addBlock(Block block) throws Exception
+	{
+		projectManagerDAO.addBlock(block);
+	}
+
+	@Override
+	public List<Block> getBlockViaId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getBlockViaId(id, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public void updateBlockViaId(Block block) throws Exception
+	{
+		projectManagerDAO.updateBlockViaId(block);
+
+	}
+
+	@Override
+	public void deleteBlockViaId(int id, String status) throws Exception
+	{
+		projectManagerDAO.deleteBlockViaId(id, status);
 	}
 
 }

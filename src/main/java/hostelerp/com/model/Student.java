@@ -197,4 +197,21 @@ public class Student implements Serializable
 		this.mobileno = mobileno;
 		this.id = id;
 	}
+
+	public Student(String name, String batch, String course, String messtype,
+			String address, String state, String city, String country,
+			String mobileno, int id, String rollNo)
+	{
+		this.name = name;
+		this.batch = batch;
+		this.course = course;
+		this.messtype = messtype;
+		this.address = address;
+		this.state = state;
+		this.city = city;
+		this.country = country;
+		this.mobileno = mobileno;
+		this.id = id;
+		this.rollno = rollNo;
+	}
 }

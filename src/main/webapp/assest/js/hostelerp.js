@@ -1,8 +1,8 @@
-function hfmsSetSelect2(jqSelector, url) {
+function hfmsSetSelect2(jqSelector, url, label) {
     var remoteDataConfig = {
 	dropdownCssClass : 'bmSelect2Class',
 	cache : "true",
-	placeholder : "Select your state",
+	placeholder : (label ? label : "Select your state"),
 	minimumInputLength : 2,
 	ajax : {
 	    url : url,
@@ -54,7 +54,7 @@ function hfmsSetSelect2(jqSelector, url) {
     $(jqSelector).select2(remoteDataConfig);
 
 }
-function hfmsSetDataTableValues(jqSelector, URL) {
+function hfmsSetDataTableValues(jqSelector, URL, aoColumns) {
 
     jQuery.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings) {
 	return {
@@ -71,48 +71,30 @@ function hfmsSetDataTableValues(jqSelector, URL) {
 	};
     };
 
-    $(jqSelector).dataTable(
-	    {
-		"bProcessing" : true,
-		"bServerSide" : true,
-		"responsive" : true,
-		"sort" : "position",
-		// bStateSave variable you can use to save state on client
-		// cookies: set value "true"
-		"bStateSave" : false,
-		// Default: Page display length
-		"iDisplayLength" : 10,
-		// We will use below variable to track page number on server
-		// side(For more information visit:
-		// http://legacy.datatables.net/usage/options#iDisplayStart)
-		"iDisplayStart" : 0,
-		"fnDrawCallback" : function() {
-		    // Get page numer on client. Please note: number start from
-		    // 0 So
-		    // for the first page you will see 0 second page 1 third
-		    // page 2...
-		    // Un-comment below alert to see page number
-		    // alert("Current page number: "+this.fnPagingInfo().iPage);
-		},
-		"sAjaxSource" : URL,
-		"aoColumns" : [ {
-		    "mData" : "name",
-		    'bSortable' : false
-		}, {
-		    "mData" : "rollno",
-		    'bSortable' : false
-		}, {
-		    "mData" : "messtype",
-		    'bSortable' : false
-		}, {
-		    "mData" : "mobileno",
-		    'bSortable' : false
-		}, {
-		    "mData" : "editBtn",
-		    'bSortable' : false
-		},
-
-		]
-	    });
+    $(jqSelector).dataTable({
+	"bProcessing" : true,
+	"bServerSide" : true,
+	"responsive" : true,
+	"sort" : "position",
+	// bStateSave variable you can use to save state on client
+	// cookies: set value "true"
+	"bStateSave" : false,
+	// Default: Page display length
+	"iDisplayLength" : 10,
+	// We will use below variable to track page number on server
+	// side(For more information visit:
+	// http://legacy.datatables.net/usage/options#iDisplayStart)
+	"iDisplayStart" : 0,
+	"fnDrawCallback" : function() {
+	    // Get page numer on client. Please note: number start from
+	    // 0 So
+	    // for the first page you will see 0 second page 1 third
+	    // page 2...
+	    // Un-comment below alert to see page number
+	    // alert("Current page number: "+this.fnPagingInfo().iPage);
+	},
+	"sAjaxSource" : URL,
+	"aoColumns" : aoColumns
+    });
 
 };
