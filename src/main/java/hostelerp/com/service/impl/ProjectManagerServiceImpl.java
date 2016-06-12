@@ -1,10 +1,12 @@
 package hostelerp.com.service.impl;
 
 import hostelerp.com.dao.ProjectManagerDAO;
+import hostelerp.com.dao.UserMenuDAO;
 import hostelerp.com.model.Block;
 import hostelerp.com.model.CityState;
 import hostelerp.com.model.Hostel;
 import hostelerp.com.model.Student;
+import hostelerp.com.model.UserMenu;
 import hostelerp.com.model.Users;
 import hostelerp.com.service.ProjectManagerService;
 
@@ -19,6 +21,9 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 
 	@Autowired
 	ProjectManagerDAO projectManagerDAO;
+
+	@Autowired
+	UserMenuDAO userMenuDAO;
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -267,5 +272,25 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 	{
 		projectManagerDAO.deleteBlockViaId(id, status);
 	}
+
+	@Override
+	public List<UserMenu> getUserMenus(String status, int userId)
+			throws Exception
+	{
+		return userMenuDAO.getUserMenu(userId, status);
+	}
+
+	@Override
+	public List<Users> getUsers(String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getUsers(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public void addUserMenuRights(UserMenu userMenu) throws Exception
+	{
+		userMenuDAO.addUserMenuRights(userMenu);
+	}
+
 
 }

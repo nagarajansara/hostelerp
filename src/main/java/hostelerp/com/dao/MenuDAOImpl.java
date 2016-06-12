@@ -38,14 +38,16 @@ public class MenuDAOImpl implements MenuDAO
 		String tempQuery = "";
 		if (userRole.equals(USER_ROLE_PROJECTMANAGER))
 		{
-			tempQuery = " ORDER BY slno,menu_id";
+			tempQuery = " WHERE ms.status =:status ORDER BY slno,menu_id";
 			tempQuery = GET_MENU_MASS + tempQuery;
+			paramMap.put("status", "active");
 		} else
 		{
 			tempQuery =
-					" WHERE is_projectmanager_menu <>:status ORDER BY slno,menu_id";
+					" WHERE is_projectmanager_menu <>:status AND ms.status =:menustatus ORDER BY slno,menu_id";
 			tempQuery = GET_MENU_MASS + tempQuery;
 			paramMap.put("status", "yes");
+			paramMap.put("menustatus", "active");
 		}
 		return namedParameterJdbcTemplate.query(tempQuery, paramMap,
 				new BeanPropertyRowMapper(Menu.class));

@@ -99,4 +99,10 @@ public interface ProjectManagerService
 
 	void deleteBlockViaId(int id, String status) throws Exception;
 
+	List<UserMenu> getUserMenus(String status, int userId) throws Exception;
+
+	List<Users> getUsers(String sTATUS_ACTIVE) throws Exception;
+
+	void addUserMenuRights(UserMenu userMenu) throws Exception;
+
 }

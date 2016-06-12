@@ -30,5 +30,8 @@
 	</bean>
 	<bean id="projectManagerDAO" class="hostelerp.com.dao.ProjectManagerDAOImpl">
 	</bean>
+	<bean id="userMenuDAO" class="hostelerp.com.dao.UserMenuDAOImpl">
+	</bean>
+
 
 </beans>

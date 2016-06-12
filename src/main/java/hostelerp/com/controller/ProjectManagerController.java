@@ -6,6 +6,7 @@ import hostelerp.com.model.CityState;
 import hostelerp.com.model.Hostel;
 import hostelerp.com.model.Menu;
 import hostelerp.com.model.Student;
+import hostelerp.com.model.UserMenu;
 import hostelerp.com.model.Users;
 import hostelerp.com.service.LoginService;
 import hostelerp.com.service.ProjectManagerService;
@@ -1075,5 +1076,83 @@ public class ProjectManagerController extends BaseController
 		}
 		model.addAttribute("model", response);
 		return "block";
+	}
+
+	@RequestMapping(value = "/getUserMenus", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getUserMenus(HttpServletRequest request,
+			@RequestParam("userId") int userId, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			Map<String, Object> map = new HashMap<String, Object>();
+			String STATUS_ACTIVE = "active";
+			List<Users> list = projectManagerService.getUsers(STATUS_ACTIVE);
+			if (userId != 0)
+			{
+				List<UserMenu> userMenu =
+						projectManagerService.getUserMenus(STATUS_ACTIVE,
+								userId);
+				map.put("userId", userId);
+				map.put("userMenu", userMenu);
+			}
+			map.put("users", list);
+			utilities.setSuccessResponse(response, map);
+		} catch (Exception ex)
+		{
+			logger.error("getUserMenus :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "usersmenu";
+	}
+
+	@RequestMapping(value = "/getUserMenus_index", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getUserMenus_index(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		try
+		{
+			Map<String, Object> map = new HashMap<String, Object>();
+			String STATUS_ACTIVE = "active";
+			List<Users> list = projectManagerService.getUsers(STATUS_ACTIVE);
+			map.put("users", list);
+			map.put("userId", 0);
+			utilities.setSuccessResponse(response, map);
+
+		} catch (Exception ex)
+		{
+			logger.error("getUserMenus_index :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "usersmenu";
+	}
+
+	@RequestMapping(value = "/addUserMenuRights", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addUserMenuRights(HttpServletRequest request,
+			@RequestParam("isApproved") String isApproved,
+			@RequestParam("manageType") String manageType,
+			@RequestParam("pk_MenuId") int menuId,
+			@RequestParam("status") String status,
+			@RequestParam("userId") int userId, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			UserMenu userMenu =
+					new UserMenu(isApproved, manageType, menuId, status, userId);
+			projectManagerService.addUserMenuRights(userMenu);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("addUserMenuRights :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "usersmenu";
 	}
 }

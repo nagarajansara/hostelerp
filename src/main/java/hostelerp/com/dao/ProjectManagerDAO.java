@@ -100,4 +100,6 @@ public interface ProjectManagerDAO
 
 	void deleteBlockViaId(int id, String status) throws Exception;
 
+	List<Users> getUsers(String sTATUS_ACTIVE) throws Exception;
+
 }

@@ -33,6 +33,8 @@ function CtDAO() {
 	    + "/manager/updateBlockViaId.json";
     this.DELETE_BLOCK_VIA_ID = this.API_PREFIX
 	    + "/manager/deleteBlockViaId.json";
+    this.GET_MENUS_VIA_USERID = this.API_PREFIX + "/manager/getUserMenus.json";
+    this.ADD_USER_MENU_RIGHTS = this.API_PREFIX + "/manager/addUserMenuRights.json";
 
     this.RESPONSE_CACHE = {};
 
@@ -110,7 +112,14 @@ CtDAO.prototype.deleteBlockViaId = function(postParams, cbk) {
     var tObj = this;
     tObj.getData(tObj.DELETE_BLOCK_VIA_ID, postParams, cbk);
 };
-
+CtDAO.prototype.getUserMenus = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_MENUS_VIA_USERID, postParams, cbk);
+};
+CtDAO.prototype.addUserMenuRights = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.ADD_USER_MENU_RIGHTS, postParams, cbk);
+};
 CtDAO.prototype.getData = function(url, postParams, callback, isCacheMap,
 	isParse) {
     $(".hfmsLoader").show();

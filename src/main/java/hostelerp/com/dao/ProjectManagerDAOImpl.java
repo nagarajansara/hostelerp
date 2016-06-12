@@ -128,6 +128,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 			"UPdate block set hostelname =:hostelname, blockname =:blockname, nooffloor =:nooffloor where id =:id";
 	final String DELETE_BLOCK_VIA_ID =
 			"Update block set status =:status where id =:id";
+	final String GET_ALL_USERS = "SELECT * from users where status =:status";
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -576,6 +577,15 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 
 		namedParameterJdbcTemplate.update(DELETE_BLOCK_VIA_ID, paramMap);
 
+	}
+
+	@Override
+	public List<Users> getUsers(String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.query(GET_ALL_USERS, paramMap,
+				new BeanPropertyRowMapper(Users.class));
 	}
 
 }
