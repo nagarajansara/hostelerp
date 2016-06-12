@@ -30,11 +30,11 @@ CREATE TABLE `block` (
   PRIMARY KEY (`hostelname`,`blockname`),
   UNIQUE KEY `NewIndex1` (`id`),
   KEY `NewIndex2` (`hostelname`,`blockname`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 /*Data for the table `block` */
 
-insert  into `block`(`id`,`hostelname`,`blockname`,`nooffloor`,`status`,`createdat`) values (5,'DOD Son','A',1,'deactive','2016-06-08 15:25:46'),(6,'DOD Son','Naga',2,'active','2016-06-08 16:44:56');
+insert  into `block`(`id`,`hostelname`,`blockname`,`nooffloor`,`status`,`createdat`) values (5,'DOD Son','A',1,'active','2016-06-08 15:25:46'),(6,'DOD Son','Naga',2,'active','2016-06-08 16:44:56'),(7,'DOD Son','Nagarajan',101,'active','2016-06-11 17:21:25');
 
 /*Table structure for table `city` */
 
@@ -88,7 +88,7 @@ CREATE TABLE `hostel` (
 
 /*Data for the table `hostel` */
 
-insert  into `hostel`(`id`,`name`,`collegename`,`image`,`mobileno`,`address`,`state`,`city`,`status`,`country`,`createdat`) values (10,'b','bhc','','435456425','Namakkal','Rajasthan','Chennai','active','india','2016-06-07 19:54:48'),(6,'DOD Son','bhc','','4543254','Namakkal','Tamil Nadu','Coimbatore','active','india','2016-06-07 19:49:08'),(1,'Naga','bhc',NULL,'9976625471','Namakkal- 637213','Kerala','Thirumangalam','active','india','2016-06-07 19:39:28'),(8,'Sara','bhc','','4545','Namakkal','Tamil Nadu','Coimbatore','active','india','2016-06-07 19:51:48');
+insert  into `hostel`(`id`,`name`,`collegename`,`image`,`mobileno`,`address`,`state`,`city`,`status`,`country`,`createdat`) values (10,'b','bhc','','435456425','Namakkal - 637213','Rajasthan','Chennai','active','india','2016-06-07 19:54:48'),(6,'DOD Son','bhc','','4543254','Namakkal','Tamil Nadu','Coimbatore','active','india','2016-06-07 19:49:08'),(1,'Naga','bhc',NULL,'9976625471','Namakkal- 637213','Kerala','Thirumangalam','active','india','2016-06-07 19:39:28'),(8,'Sara','bhc','','4545','Namakkal','Tamil Nadu','Coimbatore','active','india','2016-06-07 19:51:48');
 
 /*Table structure for table `menu_mas` */
 
@@ -106,11 +106,11 @@ CREATE TABLE `menu_mas` (
   `is_projectmanager_menu` enum('yes','no') NOT NULL DEFAULT 'no',
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
   PRIMARY KEY (`menu_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 /*Data for the table `menu_mas` */
 
-insert  into `menu_mas`(`menu_id`,`menu_name`,`menu_level`,`slno`,`is_parent`,`parent_id`,`menu_url`,`menu_icon`,`is_projectmanager_menu`,`status`) values (1,'College',1,1,'yes',0,'#','fa fa-globe','no','active'),(2,'Hostel',1,2,'yes',0,'api/manager/get_hostel','fa fa-building-o','no','active'),(3,'Block',1,3,'yes',0,'api/manager/get_block','fa fa-flash','no','active'),(4,'Student',1,4,'yes',0,'api/manager/get_student','fa fa-user','no','active'),(5,'Users',1,5,'yes',0,'api/manager/users_index','fa fa-users','yes','active');
+insert  into `menu_mas`(`menu_id`,`menu_name`,`menu_level`,`slno`,`is_parent`,`parent_id`,`menu_url`,`menu_icon`,`is_projectmanager_menu`,`status`) values (1,'College',1,1,'yes',0,'#','fa fa-globe','no','active'),(2,'Hostel',1,2,'yes',0,'api/manager/get_hostel','fa fa-building-o','no','active'),(3,'Block',1,3,'yes',0,'api/manager/get_block','fa fa-flash','no','active'),(4,'Student',1,4,'yes',0,'api/manager/get_student','fa fa-user','no','active'),(5,'Users',1,5,'yes',0,'api/manager/users_index','fa fa-users','yes','active'),(6,'UserMenu',1,6,'yes',0,'api/manager/getUserMenus_index','fa fa-cog','yes','active');
 
 /*Table structure for table `state` */
 
@@ -166,11 +166,11 @@ CREATE TABLE `user_vs_menu` (
   `edit_access` enum('yes','no') NOT NULL DEFAULT 'no',
   `delete_access` enum('yes','no') NOT NULL DEFAULT 'no',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
 /*Data for the table `user_vs_menu` */
 
-insert  into `user_vs_menu`(`id`,`userid`,`menu_id`,`save_access`,`edit_access`,`delete_access`) values (1,2,1,'yes','yes','yes'),(2,2,2,'yes','yes','yes'),(3,2,3,'yes','yes','yes'),(4,2,4,'yes','yes','yes'),(6,2,5,'yes','yes','yes');
+insert  into `user_vs_menu`(`id`,`userid`,`menu_id`,`save_access`,`edit_access`,`delete_access`) values (1,2,1,'yes','yes','yes'),(2,2,2,'yes','no','yes'),(3,2,3,'yes','yes','yes'),(4,2,4,'yes','yes','yes'),(6,2,5,'yes','yes','yes'),(15,1,2,'no','yes','no'),(16,1,5,'no','no','no');
 
 /*Table structure for table `users` */
 
@@ -190,7 +190,7 @@ CREATE TABLE `users` (
 
 /*Data for the table `users` */
 
-insert  into `users`(`userid`,`username`,`password`,`firstname`,`usertype`,`status`,`created_on`) values (1,'admin@gmail.com','pass','nagarajan','admin','active','2016-05-31 13:35:28'),(2,'projectmagager@gmail.com','pass','Manager','projectmanager','active','2016-05-31 13:37:28'),(3,'connecttosavan@gmail.com','123','Naga','projectmanager','active','2016-06-01 16:23:40'),(4,'aksabuthahir@gmail.com','123456','Naga','admin','active','2016-06-01 22:21:28');
+insert  into `users`(`userid`,`username`,`password`,`firstname`,`usertype`,`status`,`created_on`) values (1,'admin@gmail.com','pass','nagarajan','admin','active','2016-05-31 13:35:28'),(2,'projectmagager@gmail.com','pass','Manager','projectmanager','active','2016-05-31 13:37:28'),(3,'connecttosavan@gmail.com','123','Naga','projectmanager','active','2016-06-01 16:23:40'),(4,'aksabuthahir@gmail.com','123456','Naga Ramalingam','admin','active','2016-06-01 22:21:28');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
