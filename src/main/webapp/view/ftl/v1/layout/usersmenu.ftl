@@ -8,7 +8,7 @@
 				<section class="panel">
 					<header class="panel-heading"> User Lists </header>
 					<div class="panel-body">
-						<form method="POST" class="form-horizontal"
+						<form method="PUT" class="form-horizontal"
 							action="${baseURL}/api/manager/getUserMenus">
 							<#if model.responseData.users??>
 							<div class="form-group">
@@ -101,7 +101,7 @@
 											status="insert">
 										</#if>
 										<#if element.delete_access != 'norecord'>
-											<#if element.save_access == 'yes'>
+											<#if element.delete_access == 'yes'>
 												<input
 													type="checkbox" checked class="hfmsComonMenuChkBox"
 													pk_MenuId="${element.menu_id}" manageType="delete_access"

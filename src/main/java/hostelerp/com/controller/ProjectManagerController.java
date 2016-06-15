@@ -1079,7 +1079,7 @@ public class ProjectManagerController extends BaseController
 	}
 
 	@RequestMapping(value = "/getUserMenus", method =
-	{ RequestMethod.GET, RequestMethod.POST })
+	{ RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT })
 	public String getUserMenus(HttpServletRequest request,
 			@RequestParam("userId") int userId, HttpServletResponse res,
 			ModelMap model) throws Exception
