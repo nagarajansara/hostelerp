@@ -105,4 +105,91 @@ public interface ProjectManagerService
 
 	void addUserMenuRights(UserMenu userMenu) throws Exception;
 
+	void addColleges(College college) throws Exception;
+
+	List<College> getColleges(int startIndx, int maxIndx, String sTATUS_ACTIVE)
+			throws Exception;
+
+	int getCollegesNumEntries(String sTATUS_ACTIVE) throws Exception;
+
+	List<College> getCollegesViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception;
+
+	int getCollegeNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception;
+
+	List<College> getCollegeViaId(int id, String sTATUS_ACTIVE)
+			throws Exception;
+
+	void updateCollegesViaId(College college) throws Exception;
+
+	void deleteCollegeViaId(int id, String dEACTIVE) throws Exception;
+
+	List<Room> getRooms(int startIndx, int maxIndx, String sTATUS_ACTIVE)
+			throws Exception;
+
+	int getRoomsNumEntries(String sTATUS_ACTIVE) throws Exception;
+
+	List<Room> getRoomsViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception;
+
+	int getRoomsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception;
+
+	List<College> getAllCollegesViaStatus(String sTATUS_ACTIVE)
+			throws Exception;
+
+	List<Hostel> getHostelsViaCollegeId(int collegeId) throws Exception;
+
+	List<Block> getBlockViaHostelId(int collegeId, int hostelId)
+			throws Exception;
+
+	void addRoom(Room room) throws Exception;
+
+	List<Room> getRoomViaId(int id) throws Exception;
+
+	List<Hostel> getHostelsViaRoomId(int id, String STATUS_ACTIVE)
+			throws Exception;
+
+	List<Block> getBlocksViaRoomId(int id, String sTATUS_ACTIVE)
+			throws Exception;
+
+	void updateRoomViaId(Room room) throws Exception;
+
+	List<Block> getNoFloorsViaHostelAndBlockId(int hostelId, int blockId,
+			String sTATUS_ACTIVE) throws Exception;
+
+	List<RoomAllocation> getRoomAllocationDetails(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception;
+
+	int getRoomAllocationDetailsNumEntries(String sTATUS_ACTIVE)
+			throws Exception;
+
+	List<RoomAllocation> getRoomAllocationDetailsViaSearchParam(int startIndx,
+			int maxIndx, String sTATUS_ACTIVE, String searchParameter)
+			throws Exception;
+
+	int getRoomAllocationDetailsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception;
+
+	List<Student> getStudentViaCollegeId(int collegeId, String sTATUS_ACTIVE)
+			throws Exception;
+
+	List<Hostel> getHostelViaCollegeId(int collegeId) throws Exception;
+
+	List<Room> getRoomNoViaHostelId(int hostelId, String STATUS_ACTIVE)
+			throws Exception;
+
+	int chkIsAlloted(RoomAllocation roomAllocation) throws Exception;
+
+	void addRoomAllocation(RoomAllocation roomAllocation) throws Exception;
+
+			List<RoomAllocation> getRoomAllocationDetailsViaRoomId(
+					int roomAllocationId) throws Exception;
+
+	void updateRoomAllocationViaId(RoomAllocation roomAllocation)
+			throws Exception;
+
+	int getRoomNoViaHostelId_RoomNo(int hostelId, int roomId) throws Exception;
+
 }

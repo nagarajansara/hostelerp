@@ -41,3 +41,7 @@
 .hfmsStateParent div, .hfmsCityParent div {
 	width: 100%;
 }
+.pkDataCommonTable   td:last-child
+{
+	text-align: center;
+}

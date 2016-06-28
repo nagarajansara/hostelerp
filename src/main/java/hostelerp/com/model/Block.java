@@ -6,6 +6,30 @@ public class Block implements Serializable
 {
 	private int id;
 	private String hostelname;
+	private String collegename;
+
+	public String getCollegename()
+	{
+		return collegename;
+	}
+
+	public void setCollegename(String collegename)
+	{
+		this.collegename = collegename;
+	}
+
+	private int hostelid;
+
+	public int getHostelid()
+	{
+		return hostelid;
+	}
+
+	public void setHostelid(int hostelid)
+	{
+		this.hostelid = hostelid;
+	}
+
 	private String blockname;
 	private String editBtn;
 	private String status;
@@ -88,16 +112,16 @@ public class Block implements Serializable
 
 	}
 
-	public Block(String hostelname, String blockname, int nooffloor)
+	public Block(int hostelid, String blockname, int nooffloor)
 	{
-		this.hostelname = hostelname;
+		this.hostelid = hostelid;
 		this.blockname = blockname;
 		this.nooffloor = nooffloor;
 	}
 
-	public Block(String hostelname, String blockname, int nooffloor, int id)
+	public Block(int hostelid, String blockname, int nooffloor, int id)
 	{
-		this.hostelname = hostelname;
+		this.hostelid = hostelid;
 		this.blockname = blockname;
 		this.nooffloor = nooffloor;
 		this.id = id;

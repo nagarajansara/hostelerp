@@ -3,8 +3,11 @@ package hostelerp.com.controller;
 import hostelerp.com.datatable.CommonDataTableJsonObj;
 import hostelerp.com.model.Block;
 import hostelerp.com.model.CityState;
+import hostelerp.com.model.College;
 import hostelerp.com.model.Hostel;
 import hostelerp.com.model.Menu;
+import hostelerp.com.model.Room;
+import hostelerp.com.model.RoomAllocation;
 import hostelerp.com.model.Student;
 import hostelerp.com.model.UserMenu;
 import hostelerp.com.model.Users;
@@ -23,7 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.Host;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -269,8 +271,24 @@ public class ProjectManagerController extends BaseController
 	@RequestMapping(value = "/get_student", method =
 	{ RequestMethod.GET, RequestMethod.POST })
 	public String updateUsersViaId(HttpServletRequest request,
-			HttpServletResponse res)
+			HttpServletResponse res, ModelMap model)
 	{
+
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<College> colleges =
+					projectManagerService
+							.getAllCollegesViaStatus(STATUS_ACTIVE);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("college", colleges);
+			utilities.setSuccessResponse(response, map);
+		} catch (Exception ex)
+		{
+			logger.error("get_student :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
 		return "student";
 	}
 
@@ -287,6 +305,7 @@ public class ProjectManagerController extends BaseController
 			@RequestParam("city") String city,
 			@RequestParam("country") String country,
 			@RequestParam("mobileno") String mobileno,
+			@RequestParam("collegeid") int collegeid,
 			@RequestParam(value = "menuId", required = false,
 					defaultValue = "0") int menuId, ModelMap model)
 			throws Exception
@@ -298,7 +317,7 @@ public class ProjectManagerController extends BaseController
 
 			Student student =
 					new Student(name, rollno, batch, course, messtype, address,
-							state, city, country, mobileno);
+							state, city, country, mobileno, collegeid);
 			projectManagerService.addStudent(student);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
@@ -308,8 +327,8 @@ public class ProjectManagerController extends BaseController
 			{
 				ConstException constException =
 						new ConstException(
-								ConstException.ERR_CODE_INVALID_LOGIN,
-								ConstException.ERR_MSG_INVALID_LOGIN);
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
 				utilities.setErrResponse(constException, response);
 			} else
 			{
@@ -357,6 +376,7 @@ public class ProjectManagerController extends BaseController
 			@RequestParam("city") String city,
 			@RequestParam("country") String country,
 			@RequestParam("mobileno") String mobileno,
+			@RequestParam("collegeid") int collegeid,
 			@RequestParam(value = "menuId", required = false,
 					defaultValue = "0") int menuId, ModelMap model)
 			throws Exception
@@ -368,7 +388,7 @@ public class ProjectManagerController extends BaseController
 
 			Student student =
 					new Student(name, batch, course, messtype, address, state,
-							city, country, mobileno, id, rollno);
+							city, country, mobileno, id, rollno, collegeid);
 			projectManagerService.updateStudensViaId(student);
 			utilities.setSuccessResponse(response);
 
@@ -702,7 +722,7 @@ public class ProjectManagerController extends BaseController
 	{ RequestMethod.GET, RequestMethod.POST })
 	public String addHostel(HttpServletRequest request,
 			HttpServletResponse res, @RequestParam("name") String name,
-			@RequestParam("collegename") String collegename,
+			@RequestParam("collegeid") int collegeid,
 			@RequestParam("mobileno") String mobileno,
 			@RequestParam("address") String address,
 			@RequestParam("city") String city,
@@ -717,8 +737,8 @@ public class ProjectManagerController extends BaseController
 			if (menuId != 0)
 				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
 			Hostel hostel =
-					new Hostel(name, collegename, mobileno, address, state,
-							city, country);
+					new Hostel(name, mobileno, address, state, city, country,
+							collegeid);
 			projectManagerService.addHostel(hostel);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
@@ -770,7 +790,7 @@ public class ProjectManagerController extends BaseController
 	public String updateHostelViaId(HttpServletRequest request,
 			HttpServletResponse res, @RequestParam("name") String name,
 			@RequestParam("id") int id,
-			@RequestParam("collegename") String collegename,
+			@RequestParam("collegeid") int collegeid,
 			@RequestParam("mobileno") String mobileno,
 			@RequestParam("address") String address,
 			@RequestParam("city") String city,
@@ -785,8 +805,8 @@ public class ProjectManagerController extends BaseController
 			if (menuId != 0)
 				isMenuAccessDenied(menuId, Menu.EDIT_ACCESS, request);
 			Hostel hostel =
-					new Hostel(name, collegename, mobileno, address, state,
-							city, country, id);
+					new Hostel(name, collegeid, mobileno, address, state, city,
+							country, id);
 			projectManagerService.updateHostelViaId(hostel);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
@@ -960,7 +980,7 @@ public class ProjectManagerController extends BaseController
 	@RequestMapping(value = "/addBlock", method =
 	{ RequestMethod.GET, RequestMethod.POST })
 	public String addBlock(HttpServletRequest request, HttpServletResponse res,
-			@RequestParam("hostelname") String hostelname,
+			@RequestParam("hostelid") int hostelid,
 			@RequestParam("blockname") String blockname,
 			@RequestParam("nooffloor") int nooffloor,
 			@RequestParam(value = "menuId", required = false,
@@ -971,7 +991,7 @@ public class ProjectManagerController extends BaseController
 		{
 			if (menuId != 0)
 				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
-			Block block = new Block(hostelname, blockname, nooffloor);
+			Block block = new Block(hostelid, blockname, nooffloor);
 			projectManagerService.addBlock(block);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
@@ -1019,8 +1039,7 @@ public class ProjectManagerController extends BaseController
 	@RequestMapping(value = "/updateBlockViaId", method =
 	{ RequestMethod.GET, RequestMethod.POST })
 	public String updateBlockViaId(HttpServletRequest request,
-			HttpServletResponse res,
-			@RequestParam("hostelname") String hostelname,
+			HttpServletResponse res, @RequestParam("hostelid") int hostelid,
 			@RequestParam("blockname") String blockname,
 			@RequestParam("nooffloor") int nooffloor,
 			@RequestParam("id") int id, @RequestParam(value = "menuId",
@@ -1031,7 +1050,7 @@ public class ProjectManagerController extends BaseController
 		{
 			if (menuId != 0)
 				isMenuAccessDenied(menuId, Menu.EDIT_ACCESS, request);
-			Block block = new Block(hostelname, blockname, nooffloor, id);
+			Block block = new Block(hostelid, blockname, nooffloor, id);
 			projectManagerService.updateBlockViaId(block);
 			utilities.setSuccessResponse(response);
 		} catch (Exception ex)
@@ -1154,5 +1173,817 @@ public class ProjectManagerController extends BaseController
 		}
 		model.addAttribute("model", response);
 		return "usersmenu";
+	}
+
+	@RequestMapping(value = "/addColleges", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addColleges(HttpServletRequest request,
+			@RequestParam("name") String name,
+			@RequestParam("address") String address,
+			@RequestParam("state") String state,
+			@RequestParam("city") String city,
+			@RequestParam("country") String country,
+			@RequestParam("mobileno") String mobileno,
+			@RequestParam(value = "menuId", required = false,
+					defaultValue = "0") int menuId, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
+
+			College college =
+					new College(name, address, state, city, country, mobileno);
+			projectManagerService.addColleges(college);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("addColleges :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+
+		}
+		model.addAttribute("model", response);
+		return "college";
+	}
+
+	@RequestMapping(value = "/getColleges", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody String getColleges(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "active";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<College> collegeList = new ArrayList<College>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+				collegeList =
+						projectManagerService.getCollegesViaSearchParam(
+								startIndx, maxIndx, STATUS_ACTIVE,
+								searchParameter);
+				numEntries =
+						projectManagerService
+								.getCollegeNumEntriesViaSearchParam(
+										STATUS_ACTIVE, searchParameter);
+			} else
+			{
+				collegeList =
+						projectManagerService.getColleges(startIndx, maxIndx,
+								STATUS_ACTIVE);
+				numEntries =
+						projectManagerService
+								.getCollegesNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<College>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<College>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(collegeList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getColleges :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+	}
+
+	@RequestMapping(value = "/get_college", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String get_college(HttpServletRequest request,
+			HttpServletResponse res)
+	{
+		return "college";
+	}
+
+	@RequestMapping(value = "/getCollegeViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public
+			String getCollegeViaId(HttpServletRequest request,
+					@RequestParam("id") int id, HttpServletResponse res,
+					ModelMap model)
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<College> colleges =
+					projectManagerService.getCollegeViaId(id, STATUS_ACTIVE);
+			utilities.setSuccessResponse(response, colleges);
+		} catch (Exception ex)
+		{
+
+			logger.error("getCollegeViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+
+		}
+		model.addAttribute("model", response);
+		return "college";
+	}
+
+	@RequestMapping(value = "/updateCollegesViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateCollegesViaId(HttpServletRequest request,
+			@RequestParam("name") String name,
+			@RequestParam("address") String address,
+			@RequestParam("state") String state,
+			@RequestParam("city") String city,
+			@RequestParam("country") String country,
+			@RequestParam("mobileno") String mobileno,
+			@RequestParam("id") int id, @RequestParam(value = "menuId",
+					required = false, defaultValue = "0") int menuId,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.SAVE_ACCESS, request);
+
+			College college =
+					new College(name, address, state, city, country, mobileno,
+							id);
+			projectManagerService.updateCollegesViaId(college);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("updateCollegesViaId :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+		}
+		model.addAttribute("model", response);
+		return "college";
+	}
+
+	@RequestMapping(value = "/deleteCollegeViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String deleteCollegeViaId(HttpServletRequest request,
+			@RequestParam("id") int id, @RequestParam(value = "menuId",
+					required = false, defaultValue = "0") int menuId,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		String DEACTIVE = "deactive";
+		try
+		{
+			if (menuId != 0)
+				isMenuAccessDenied(menuId, Menu.DELETE_ACCESS, request);
+			projectManagerService.deleteCollegeViaId(id, DEACTIVE);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("deleteCollegeViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "college";
+	}
+
+	@RequestMapping(value = "/getRoom_index", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getRoom_index(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<College> colleges =
+					projectManagerService
+							.getAllCollegesViaStatus(STATUS_ACTIVE);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("college", colleges);
+			utilities.setSuccessResponse(response, map);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoom_index :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "room";
+	}
+
+	@RequestMapping(value = "/getRooms", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody String getRooms(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model) throws Exception
+	{
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "active";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<Room> roomList = new ArrayList<Room>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+				roomList =
+						projectManagerService.getRoomsViaSearchParam(startIndx,
+								maxIndx, STATUS_ACTIVE, searchParameter);
+				numEntries =
+						projectManagerService.getRoomsNumEntriesViaSearchParam(
+								STATUS_ACTIVE, searchParameter);
+			} else
+			{
+				roomList =
+						projectManagerService.getRooms(startIndx, maxIndx,
+								STATUS_ACTIVE);
+				numEntries =
+						projectManagerService.getRoomsNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<Room>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<Room>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(roomList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRooms :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+	}
+
+	@RequestMapping(value = "/addRoom", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addRoom(HttpServletRequest request,
+			@RequestParam("blockid") int blockid,
+			@RequestParam("collegeid") int collegeid,
+			@RequestParam("floorname") int floorname,
+			@RequestParam("hostelid") int hostelid,
+			@RequestParam("noofperson") int noofperson,
+			@RequestParam("roomno") int roomno,
+			@RequestParam("roomtype") String roomtype, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			Room room =
+					new Room(blockid, collegeid, floorname, hostelid,
+							noofperson, roomno, roomtype);
+			projectManagerService.addRoom(room);
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("addRoom :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+		}
+		model.addAttribute("model", response);
+		return "room";
+	}
+
+	@RequestMapping(value = "/getHostelsViaCollegeId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getHostelsViaCollegeId(HttpServletRequest request,
+			@RequestParam("collegeId") int collegeId, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			List<Hostel> hostels =
+					projectManagerService.getHostelsViaCollegeId(collegeId);
+			utilities.setSuccessResponse(response, hostels);
+		} catch (Exception ex)
+		{
+			logger.error("getHostelsViaCollegeId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "room";
+
+	}
+
+	@RequestMapping(value = "/getBlockViaHostelId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getBlockViaHostelId(HttpServletRequest request,
+			@RequestParam("collegeId") int collegeId,
+			@RequestParam("hostelId") int hostelId, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			List<Block> blocks =
+					projectManagerService.getBlockViaHostelId(collegeId,
+							hostelId);
+			utilities.setSuccessResponse(response, blocks);
+
+		} catch (Exception ex)
+		{
+			logger.error("getBlockViaHostelId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "room";
+	}
+
+	@RequestMapping(value = "/getRoomViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public
+			String getRoomViaId(HttpServletRequest request,
+					@RequestParam("id") int id, HttpServletResponse res,
+					ModelMap model) throws Exception
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			Map<String, Object> map = new HashMap<String, Object>();
+			List<Room> rooms = projectManagerService.getRoomViaId(id);
+			List<Hostel> hostels =
+					projectManagerService
+							.getHostelsViaRoomId(id, STATUS_ACTIVE);
+			List<Block> blocks =
+					projectManagerService.getBlocksViaRoomId(id, STATUS_ACTIVE);
+			map.put("rooms", rooms);
+			map.put("hostels", hostels);
+			map.put("blocks", blocks);
+			utilities.setSuccessResponse(response, map);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoomViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "room";
+	}
+
+	@RequestMapping(value = "/updateRoomViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateRoomViaId(HttpServletRequest request,
+			@RequestParam("blockid") int blockid,
+			@RequestParam("collegeid") int collegeid,
+			@RequestParam("floorname") int floorname,
+			@RequestParam("hostelid") int hostelid,
+			@RequestParam("noofperson") int noofperson,
+			@RequestParam("roomno") int roomno,
+			@RequestParam("id") int id, // Room Id
+			@RequestParam("roomtype") String roomtype, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+
+			Room room =
+					new Room(blockid, collegeid, floorname, hostelid,
+							noofperson, roomno, roomtype, id);
+			projectManagerService.updateRoomViaId(room);
+
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+
+			logger.error("updateRoomViaId :" + ex.getMessage());
+			if (ex.getMessage().indexOf("Duplicate entry") >= 0)
+			{
+				ConstException constException =
+						new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ENTERY,
+								ConstException.ERR_MSG_DUPLICATE_ENTERY);
+				utilities.setErrResponse(constException, response);
+			} else
+			{
+				utilities.setErrResponse(ex, response);
+			}
+
+		}
+		model.addAttribute("model", response);
+		return "room";
+	}
+
+	@RequestMapping(value = "/getNoFloorsViaHostelAndBlockId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getNoFloorsViaHostelAndBlockId(HttpServletRequest request,
+			@RequestParam("blockId") int blockId,
+			@RequestParam("hostelId") int hostelId, HttpServletResponse res,
+			ModelMap model) throws Exception
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<Block> blocks =
+					projectManagerService.getNoFloorsViaHostelAndBlockId(
+							hostelId, blockId, STATUS_ACTIVE);
+			utilities.setSuccessResponse(response, blocks);
+
+		} catch (Exception ex)
+		{
+			logger.error("getNoFloors :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "room";
+	}
+
+	@RequestMapping(value = "/getRoomAllocationDetails", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody
+			String getRoomAllocationDetails(HttpServletRequest request,
+					HttpServletResponse res, ModelMap model) throws Exception
+	{
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "vacated";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<RoomAllocation> roomAllocationList =
+					new ArrayList<RoomAllocation>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+				roomAllocationList =
+						projectManagerService
+								.getRoomAllocationDetailsViaSearchParam(
+										startIndx, maxIndx, STATUS_ACTIVE,
+										searchParameter);
+				numEntries =
+						projectManagerService
+								.getRoomAllocationDetailsNumEntriesViaSearchParam(
+										STATUS_ACTIVE, searchParameter);
+			} else
+			{
+				roomAllocationList =
+						projectManagerService.getRoomAllocationDetails(
+								startIndx, maxIndx, STATUS_ACTIVE);
+				numEntries =
+						projectManagerService
+								.getRoomAllocationDetailsNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<RoomAllocation>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<RoomAllocation>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(roomAllocationList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoomAllocationDetails :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+	}
+
+	@RequestMapping(value = "/getRoomAllocation_index", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getRoomAllocation_index(HttpServletRequest request,
+			HttpServletResponse res, ModelMap model)
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<College> colleges =
+					projectManagerService
+							.getAllCollegesViaStatus(STATUS_ACTIVE);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("college", colleges);
+			utilities.setSuccessResponse(response, map);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoomAllocation_index :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
+	}
+
+	@RequestMapping(value = "/getStudentViaCollegeId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getStudentViaCollegeId(HttpServletRequest request,
+			@RequestParam("collegeId") int collegeId, HttpServletResponse res,
+			ModelMap model)
+	{
+		try
+		{
+			Map<String, Object> map = new HashMap<String, Object>();
+			String STATUS_ACTIVE = "active";
+			List<Student> students =
+					projectManagerService.getStudentViaCollegeId(collegeId,
+							STATUS_ACTIVE);
+			List<Hostel> hostels =
+					projectManagerService.getHostelViaCollegeId(collegeId);
+			map.put("student", students);
+			map.put("hostel", hostels);
+
+			utilities.setSuccessResponse(response, map);
+		} catch (Exception ex)
+		{
+			logger.error("getStudentViaCollegeId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
+	}
+
+	@RequestMapping(value = "/getHostelViaCollegeId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getHostelViaCollegeId(HttpServletRequest request,
+			@RequestParam("collegeId") int collegeId, HttpServletResponse res,
+			ModelMap model)
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<Hostel> hostels =
+					projectManagerService.getHostelViaCollegeId(collegeId);
+			utilities.setSuccessResponse(response, hostels);
+
+		} catch (Exception ex)
+		{
+			logger.error("getHostelViaCollegeId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
+	}
+
+	// GET AVAILABLE ROOMS
+	@RequestMapping(value = "/getRoomNoViaHostelId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getRoomNoViaHostelId(HttpServletRequest request,
+			@RequestParam("hostelId") int hostelId, HttpServletResponse res,
+			ModelMap model)
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<Room> rooms =
+					projectManagerService.getRoomNoViaHostelId(hostelId,
+							STATUS_ACTIVE);
+			utilities.setSuccessResponse(response, rooms);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoomNoViaHostelId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
+	}
+
+	@RequestMapping(value = "/addRoomAllocation", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String addRoomAllocation(HttpServletRequest request,
+			@RequestParam("roomid") int roomid,
+			@RequestParam("studentid") int studentid, HttpServletResponse res,
+			ModelMap model)
+	{
+		try
+		{
+			String STATUS_ALLOCATED = "alloted";
+			RoomAllocation roomAllocation =
+					new RoomAllocation(roomid, studentid, STATUS_ALLOCATED,
+							utilities.getDate());
+
+			int isAlloted = projectManagerService.chkIsAlloted(roomAllocation);
+			if (isAlloted > 0)
+			{
+				throw new ConstException(
+						ConstException.ERR_CODE_DUPLICATE_ROOM_ALLOCATION,
+						ConstException.ERR_MSG_DUPLICATE_ROOM_ALLOCATION);
+			} else
+			{
+				projectManagerService.addRoomAllocation(roomAllocation);
+			}
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoomNoViaHostelId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
+	}
+
+	@RequestMapping(value = "/getRoomAllocationViaRoomAllocationId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getRoomAllocationViaRoomAllocationId(
+			HttpServletRequest request,
+			@RequestParam("roomAllocationId") int roomAllocationId,
+			ModelMap model)
+	{
+		try
+		{
+			Map<String, Object> map = new HashMap<String, Object>();
+			int collegeId = 0;
+			int hostelId = 0;
+			String STATUS_ACTIVE = "active";
+			List<RoomAllocation> allocations =
+					projectManagerService
+							.getRoomAllocationDetailsViaRoomId(roomAllocationId);
+			if (allocations != null && allocations.size() > 0)
+			{
+				if (allocations.size() == 1)
+				{
+					for (int i = 0; i < allocations.size(); i++)
+					{
+						RoomAllocation roomAllocation =
+								(RoomAllocation) allocations.get(i);
+						collegeId = roomAllocation.getCollegeid();
+						hostelId = roomAllocation.getHostelid();
+					}
+				} else
+				{
+					throw new ConstException(
+							ConstException.ERR_CODE_ROOM_ALLOCATION_MAX_RECORS,
+							ConstException.ERR_MSG_ROOM_ALLOCATION_MAX_RECORS);
+				}
+			}
+			List<Hostel> hostels =
+					projectManagerService.getHostelsViaCollegeId(collegeId);
+			List<Room> rooms =
+					projectManagerService.getRoomNoViaHostelId(hostelId,
+							STATUS_ACTIVE);
+			/*
+			 * List<Student> students =
+			 * projectManagerService.getStudentViaCollegeId(collegeId,
+			 * STATUS_ACTIVE);
+			 */
+			// map.put("students", students);
+			map.put("hostels", hostels);
+			map.put("rooms", rooms);
+			map.put("allocations", allocations);
+
+			utilities.setSuccessResponse(response, map);
+
+		} catch (Exception ex)
+		{
+			logger.error("getRoomAllocationViaRoomAllocationId :"
+					+ ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
+	}
+
+	@RequestMapping(value = "/updateRoomAllocationViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateRoomAllocationViaId(HttpServletRequest request,
+			@RequestParam("roomallocationid") int roomallocationid,
+			@RequestParam("collegeid") int collegeid,
+			@RequestParam("hostelid") int hostelid,
+			@RequestParam("roomid") int roomid,
+			@RequestParam("status") String status,
+			@RequestParam("preStatus") String preStatus,
+			@RequestParam("studentid") int studentid, ModelMap model)
+	{
+		try
+		{
+
+			if (preStatus.equals("shifted") && status.equals("alloted"))
+			{
+				int availableRoom =
+						projectManagerService.getRoomNoViaHostelId_RoomNo(
+								collegeid, roomid);
+				if (availableRoom == 0)
+				{
+					RoomAllocation roomAllocation =
+							new RoomAllocation(roomid, studentid, "alloted",
+									utilities.getDate());
+					int isAlloted =
+							projectManagerService.chkIsAlloted(roomAllocation);
+					if (isAlloted > 0)
+					{
+						throw new ConstException(
+								ConstException.ERR_CODE_DUPLICATE_ROOM_ALLOCATION,
+								ConstException.ERR_MSG_DUPLICATE_ROOM_ALLOCATION);
+					} else
+					{
+						roomAllocation =
+								new RoomAllocation(roomallocationid, roomid,
+										studentid, utilities.getDate(), status);
+						projectManagerService
+								.updateRoomAllocationViaId(roomAllocation);
+					}
+				} else
+				{
+					throw new ConstException(
+							ConstException.ERR_CODE_ROOM_NOT_AVAILABLE,
+							ConstException.ERR_MSG_ROOM_NOT_AVAILABLE);
+				}
+
+			} else
+			{
+				RoomAllocation roomAllocation =
+						new RoomAllocation(roomallocationid, roomid, studentid,
+								utilities.getDate(), status);
+				projectManagerService.updateRoomAllocationViaId(roomAllocation);
+			}
+			utilities.setSuccessResponse(response);
+
+		} catch (Exception ex)
+		{
+			logger.error("updateRoomAllocationViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "roomallocation";
 	}
 }

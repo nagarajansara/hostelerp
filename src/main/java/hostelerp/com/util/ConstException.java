@@ -15,6 +15,11 @@ public class ConstException extends Exception
 	public static int ERR_CODE_NO_CREDITS = 22;
 	public static int ERR_CODE_ACCESS_DENIED = 25;
 	public static int ERR_CODE_DUPLICATE_ENTERY = 26;
+	public static int ERR_CODE_REFERENCES_KEY = 27;
+	public static int ERR_CODE_MAX_FLOOR = 28;
+	public static int ERR_CODE_DUPLICATE_ROOM_ALLOCATION = 29;
+	public static int ERR_CODE_ROOM_ALLOCATION_MAX_RECORS = 29;
+	public static int ERR_CODE_ROOM_NOT_AVAILABLE = 30;
 
 	public static String ERR_MSG_SUCCESS = "Success";
 	public static String ERR_MSG_SESSION_EXP = "Session expired";
@@ -26,7 +31,17 @@ public class ConstException extends Exception
 	public static String ERR_MSG_NO_DATA = "No data found";
 	public static String ERR_MSG_NO_CREDITS = "No credits";
 	public static String ERR_MSG_ACCESS_DENIED = "Access Denied";
-	public static String ERR_MSG_DUPLICATE_ENTERY = "User already registered";
+	public static String ERR_MSG_DUPLICATE_ENTERY = "Already registered";
+	public static String ERR_MSG_REFERENCES_KEY =
+			"This entry reference used another table. Please delete that table entry";
+	public static String ERR_MSG_MAX_FLOOR = "Floor is exceed";
+	public static String ERR_MSG_DUPLICATE_ROOM_ALLOCATION =
+			"Room is alloted already";
+	public static String ERR_MSG_ROOM_ALLOCATION_MAX_RECORS =
+			"Max room allocation entries";
+	public static String ERR_MSG_ROOM_NOT_AVAILABLE =
+			"Room seat not available";
+
 
 	int code = this.ERR_CODE_UNKNOWN;
 

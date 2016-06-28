@@ -19,7 +19,7 @@
 								<div class="form-group">
 									<label for="exampleInputPassword1">College Name </label> <input
 										type="text" class="form-control" id="exampleInputPassword1"
-										placeholder="Password" disabled value="${element.collegename}">
+										placeholder="Password" disabled value="${element.collegeName}">
 								</div>
 								<div class="form-group">
 									<label for="exampleInputPassword1">Mobile No </label> <input

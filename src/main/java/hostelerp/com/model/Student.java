@@ -6,6 +6,8 @@ public class Student implements Serializable
 {
 
 	private int id;
+	private int collegeid;
+
 	private String name;
 	private String rollno;
 	private String batch;
@@ -15,7 +17,19 @@ public class Student implements Serializable
 	private String state;
 	private String city;
 	private String country;
+
+	public String getCollegeName()
+	{
+		return collegeName;
+	}
+
+	public void setCollegeName(String collegeName)
+	{
+		this.collegeName = collegeName;
+	}
+
 	private String mobileno;
+	private String collegeName;
 
 	public String getMobileno()
 	{
@@ -168,7 +182,7 @@ public class Student implements Serializable
 
 	public Student(String name, String rollno, String batch, String course,
 			String messtype, String address, String state, String city,
-			String country, String mobileno)
+			String country, String mobileno, int collegeId)
 	{
 		this.name = name;
 		this.rollno = rollno;
@@ -180,6 +194,17 @@ public class Student implements Serializable
 		this.city = city;
 		this.country = country;
 		this.mobileno = mobileno;
+		this.collegeid = collegeId;
+	}
+
+	public int getCollegeid()
+	{
+		return collegeid;
+	}
+
+	public void setCollegeid(int collegeid)
+	{
+		this.collegeid = collegeid;
 	}
 
 	public Student(String name, String batch, String course, String messtype,
@@ -200,7 +225,7 @@ public class Student implements Serializable
 
 	public Student(String name, String batch, String course, String messtype,
 			String address, String state, String city, String country,
-			String mobileno, int id, String rollNo)
+			String mobileno, int id, String rollNo, int collegeId)
 	{
 		this.name = name;
 		this.batch = batch;
@@ -213,5 +238,6 @@ public class Student implements Serializable
 		this.mobileno = mobileno;
 		this.id = id;
 		this.rollno = rollNo;
+		this.collegeid = collegeId;
 	}
 }

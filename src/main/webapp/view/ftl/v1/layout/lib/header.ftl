@@ -29,6 +29,7 @@
 <link href="${baseURL}/theme/css/style-responsive.css" rel="stylesheet" />
 
 <link href="${baseURL}/assest/css/hostelerp.css" rel="stylesheet" />
+<link href="${baseURL}/assest/plugin/selectize.css" rel="stylesheet" />
 
 <!--<link href="${baseURL}/theme/css/table-responsive.css" rel="stylesheet" />-->
 
@@ -41,6 +42,12 @@
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <style>
+    	.hfmsDelBtn, .hfmsDelWorker
+    	{
+    		display :none !important;
+    	}
+    </style>
 </head>
 <body>
 	<section id="container">

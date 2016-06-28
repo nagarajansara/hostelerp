@@ -6,13 +6,25 @@ public class Hostel implements Serializable
 {
 	private int id;
 	private String name;
-	private String collegename;
 	private String image;
 	private String landlineno;
 	private String mobileno;
 	private String address;
 	private String state;
 	private String status;
+	private String collegeName;
+
+	public String getCollegeName()
+	{
+		return collegeName;
+	}
+
+	public void setCollegeName(String collegeName)
+	{
+		this.collegeName = collegeName;
+	}
+
+	private int collegeid;
 
 	public String getStatus()
 	{
@@ -55,16 +67,6 @@ public class Hostel implements Serializable
 	public void setName(String name)
 	{
 		this.name = name;
-	}
-
-	public String getCollegename()
-	{
-		return collegename;
-	}
-
-	public void setCollegename(String collegename)
-	{
-		this.collegename = collegename;
 	}
 
 	public String getImage()
@@ -155,11 +157,11 @@ public class Hostel implements Serializable
 
 	}
 
-	public Hostel(String name, String collegename, String mobileno,
+	public Hostel(String name, int collegeid, String mobileno,
 			String address, String state, String city, String country, int id)
 	{
 		this.name = name;
-		this.collegename = collegename;
+		this.collegeid = collegeid;
 		this.mobileno = mobileno;
 		this.address = address;
 		this.state = state;
@@ -169,16 +171,25 @@ public class Hostel implements Serializable
 
 	}
 
-	public Hostel(String name, String collegename, String mobileno,
-			String address, String state, String city, String country)
+	public int getCollegeid()
+	{
+		return collegeid;
+	}
+
+	public void setCollegeid(int collegeid)
+	{
+		this.collegeid = collegeid;
+	}
+
+	public Hostel(String name, String mobileno, String address, String state,
+			String city, String country, int collegeid)
 	{
 		this.name = name;
-		this.collegename = collegename;
 		this.mobileno = mobileno;
 		this.address = address;
 		this.state = state;
 		this.city = city;
 		this.country = country;
-
+		this.collegeid = collegeid;
 	}
 }

@@ -121,3 +121,8 @@ BmpUtil.prototype.getLastStartingURL = function()
 	var lastPart = ((location.href.toString()).split("/")).pop();
 	return lastPart;
 };
+BmpUtil.prototype.reLoad = function()
+{
+    location.reload();
+};
+

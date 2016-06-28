@@ -16,6 +16,7 @@
 							<thead>
 								<tr>
 									<th>Student Name</th>
+									<th>College Name</th>
 									<th>Roll No</th>
 									<th>Mess Type</th>
 									<th>Mobile No</th>
@@ -46,6 +47,11 @@
 										placeholder="Student Name" jsonKey="name" required>
 								</div>
 								<div class="form-group">
+									<label for="exampleInputEmail1">College Name</label><input
+										style="width: 100%;" type="hidden" name="collgename"
+										class="hfmsCollegeName">
+								</div>
+								<div class="form-group">
 									<label for="exampleInputEmail1">Roll No</label> <input
 										type="text" class="form-control hfmsRollno"
 										placeholder="RollNo" jsonKey="rollno" required>
@@ -57,15 +63,17 @@
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Mess Type</label> <select
-										class="form-control m-bot15 hfmsMessType" jsonKey="messtype">
+										class="form-control m-bot15 hfmsMessType hfmsCommonStudentSelectize" jsonKey="messtype" placeholder="Select Mess" data-parsley-required>
+										<option value=""></option>
 										<option value="veg">Veg</option>
 										<option value="nonveg">Non Veg</option>
 									</select>
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Course</label> <select
-										class="form-control m-bot15 hfmsStudentCourse"
-										jsonKey="course">
+										class="form-control m-bot15 hfmsStudentCourse hfmsCommonStudentSelectize"
+										jsonKey="course" placeholder="Select Course" data-parsley-required>
+										<option value=""></option>
 										<option value="mca">MCA</option>
 										<option value="mba">MBA</option>
 									</select>
@@ -92,7 +100,8 @@
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Country</label> <select
-										class="form-control m-bot15 hfmsCountry" jsonKey="country">
+										class="form-control m-bot15 hfmsCountry hfmsCommonStudentSelectize" jsonKey="country" placeholder="Select Country" data-parsley-required>
+										<option value=""></option>
 										<option value="india">India</option>
 									</select>
 								</div>
@@ -122,6 +131,7 @@
 										type="text" class="form-control hfmsStudentUpdatedName"
 										placeholder="Student Name" jsonKey="name" required>
 								</div>
+								<div class="form-group hfmsCollegeNameParent"></div>
 								<input type="hidden" jsonKey="id" class="hfmsUpdateStudentId">
 								<div class="form-group">
 									<label for="exampleInputEmail1">Roll No</label> <input
@@ -135,16 +145,18 @@
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Mess Type</label> <select
-										class="form-control m-bot15 hfmsUpdatedMessType"
-										jsonKey="messtype">
+										class="form-control m-bot15 hfmsUpdatedMessType hfmsCommonStudentSelectize"
+										jsonKey="messtype" placeholder="Select Mess" data-parsley-required>
+										<option value=""></option>
 										<option value="veg">Veg</option>
 										<option value="nonveg">Non Veg</option>
 									</select>
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Course</label> <select
-										class="form-control m-bot15 hfmsUpdatedStudentCourse"
-										jsonKey="course">
+										class="form-control m-bot15 hfmsUpdatedStudentCourse hfmsCommonStudentSelectize"
+										jsonKey="course" placeholder="Select Course" data-parsley-required>
+										<option value=""></option>
 										<option value="mca">MCA</option>
 										<option value="mba">MBA</option>
 									</select>
@@ -164,8 +176,9 @@
 								<div class="form-group hfmsCityParent"></div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Country</label> <select
-										class="form-control m-bot15 hfmsUpdatedCountry"
-										jsonKey="country">
+										class="form-control m-bot15 hfmsUpdatedCountry hfmsCommonStudentSelectize"
+										jsonKey="country" placeholder="Select Country">
+										<option value=""></option>
 										<option value="india">India</option>
 									</select>
 								</div>
@@ -195,29 +208,42 @@
     $(".hfmsMobileNo").numeric();
     $(".hfmsUpdatedMobileNo").numeric();
 
-    hfmsSetSelect2("#hfmsCity", 'http://' + location.host + '/'
-	    + ctDAO.CONTEXT_NAME + '/api/manager/getCityApi.json');
-    hfmsSetSelect2("#hfmsState", 'http://' + location.host + '/'
-	    + ctDAO.CONTEXT_NAME + '/api/manager/getStateApi.json');
 
-    var aoColumns = [
-                     {
-				    "mData" : "name",
-				    'bSortable' : false
-				}, {
-				    "mData" : "rollno",
-				    'bSortable' : false
-				}, {
-				    "mData" : "messtype",
-				    'bSortable' : false
-				}, {
-				    "mData" : "mobileno",
-				    'bSortable' : false
-				}, {
-				    "mData" : "editBtn",
-				    'bSortable' : false
-				    },
-				];
+    $(".hfmsCommonStudentSelectize").selectize({
+	    sortField:
+	    {
+		     field: "text",
+		     direction: "asc"
+	    }
+	});
+
+    hfmsSetSelect2("#hfmsCity", 'http://' + location.host + '/'
+	    + ctDAO.CONTEXT_NAME + '/api/manager/getCityApi.json', 'Type your city name');
+    hfmsSetSelect2("#hfmsState", 'http://' + location.host + '/'
+	    + ctDAO.CONTEXT_NAME + '/api/manager/getStateApi.json', 'Type your state name');
+
+    hfmsSetSelect2(".hfmsCollegeName", 'http://' + location.host + '/'
+	    + ctDAO.CONTEXT_NAME + '/api/manager/getCollegeNameApi.json', 'Type your college name');
+
+    var aoColumns = [ {
+	"mData" : "name",
+	'bSortable' : false
+    }, {
+	"mData" : "collegeName",
+	'bSortable' : false
+    },{
+	"mData" : "rollno",
+	'bSortable' : false
+    }, {
+	"mData" : "messtype",
+	'bSortable' : false
+    }, {
+	"mData" : "mobileno",
+	'bSortable' : false
+    }, {
+	"mData" : "editBtn",
+	'bSortable' : false
+    }, ];
 
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
 	    + "${baseURL}/api/manager/getStudent", aoColumns);
@@ -237,12 +263,18 @@
 			    $(".hfmsShowStudentDataRow").show();
 			});
 
-			$(document).on("click", ".hfmsInfo", function(){
-			    var studentId = $(this).attr("pk_id"),
-			    		URL = "http://"+ location.host + "${baseURL}/api/manager/getStudentsViaId?studentId="+studentId;
-			    window.open(URL, '_blank');
-			});
-
+			$(document)
+				.on(
+					"click",
+					".hfmsInfo",
+					function() {
+					    var studentId = $(this).attr(
+						    "pk_id"), URL = "http://"
+						    + location.host
+						    + "${baseURL}/api/manager/getStudentsViaId?studentId="
+						    + studentId;
+					    window.open(URL, '_blank');
+					});
 
 			$(document)
 				.on(
@@ -262,6 +294,7 @@
 								    if (data
 									    && data.responseStatus == bmpUtil.RESPONSE_STATUS) {
 									alert("Student delete successfully");
+									bmpUtil.reLoad();
 								    } else {
 									alert(data.responseMsg);
 								    }
@@ -302,13 +335,33 @@
 								    $(
 									    ".hfmsStateParent")
 									    .empty();
+								    $(".hfmsCollegeNameParent").empty();
 
-								    $(".hfmsCityParent")
+								    $(
+								    ".hfmsCollegeNameParent")
+								    .append(
+									    "<label>College Name</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""
+										    + responseData[0].collegeName
+										    + "\" id=\"hfmsUpdatedCollegeName\" value=\""
+										    + responseData[0].collegeName
+										    + "\">");
+								    $(
+									    ".hfmsCityParent")
 									    .append(
-										    "<label for=\"exampleInputEmail1\">City</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].city + "\" id=\"hfmsUpdatedCity\" value=\""+ responseData[0].city + "\">");
+										    "<label>City</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""
+											    + responseData[0].city
+											    + "\" id=\"hfmsUpdatedCity\" value=\""
+											    + responseData[0].city
+											    + "\">");
 
-								    $(".hfmsStateParent")
-									    .append("<label for=\"exampleInputEmail1\">State</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].state + "\" id=\"hfmsUpdatedState\" value=\""+ responseData[0].state + "\">");
+								    $(
+									    ".hfmsStateParent")
+									    .append(
+										    "<label>State</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""
+											    + responseData[0].state
+											    + "\" id=\"hfmsUpdatedState\" value=\""
+											    + responseData[0].state
+											    + "\">");
 
 								    hfmsSetSelect2(
 									    "#hfmsUpdatedState",
@@ -316,14 +369,21 @@
 										    + location.host
 										    + '/'
 										    + ctDAO.CONTEXT_NAME
-										    + '/api/manager/getStateApi.json');
+										    + '/api/manager/getStateApi.json', "Type your state");
 								    hfmsSetSelect2(
 									    "#hfmsUpdatedCity",
 									    'http://'
 										    + location.host
 										    + '/'
 										    + ctDAO.CONTEXT_NAME
-										    + '/api/manager/getCityApi.json');
+										    + '/api/manager/getCityApi.json', "Type your city");
+								    hfmsSetSelect2(
+									    "#hfmsUpdatedCollegeName",
+									    'http://'
+										    + location.host
+										    + '/'
+										    + ctDAO.CONTEXT_NAME
+										    + '/api/manager/getCollegeNameApi.json', "Type your collge name");
 
 								    $(
 									    "#hfmsUpdatedState")
@@ -335,6 +395,20 @@
 									    .select2(
 										    'val',
 										    responseData[0].city);
+								    $(
+									    "#hfmsUpdatedCollegeName")
+									    .select2(
+										    'val',
+										    responseData[0].collegeid);
+
+
+								    var selectize = $(".hfmsUpdatedMessType")[0].selectize;
+									selectize.setValue(responseData[0].messtype);
+								    selectize = $(".hfmsUpdatedStudentCourse")[0].selectize;
+									selectize.setValue(responseData[0].course);
+								    selectize = $(".hfmsUpdatedCountry")[0].selectize;
+									selectize.setValue(responseData[0].country);
+
 
 								} else {
 								    alert(data.responseMsg);
@@ -355,11 +429,13 @@
 						var cityObj = $(
 							'#hfmsUpdatedCity')
 							.select2('data');
-						var city;
+						var collegeObj = $('#hfmsUpdatedCollegeName').select2('data');
+						var city, collegeId;
 						var state, config = {};
-						if (stateObj && cityObj) {
+						if (stateObj && cityObj && collegeObj) {
 						    state = stateObj.text;
 						    city = cityObj.text;
+						    collegeId = collegeObj.id;
 						    config.jqSelector = ".hrfsSubmitStudentsUpdateForm";
 						    var constJSONParam = new ConstJSONParam(
 							    config);
@@ -367,6 +443,7 @@
 							    .getParamsValue();
 						    paramMap["city"] = city;
 						    paramMap["state"] = state;
+						    paramMap["collegeid"] = collegeId;
 						    ctDAO
 							    .updateStudensViaId(
 								    paramMap,
@@ -375,8 +452,10 @@
 									if (data
 										&& data.responseStatus == bmpUtil.RESPONSE_STATUS) {
 									    alert("Updated successfully");
+									    bmpUtil.reLoad();
 									} else {
 									    alert(data.responseMsg);
+									    bmpUtil.reLoad();
 									}
 								    })
 						} else {
@@ -397,15 +476,22 @@
 							.select2('data');
 						var cityObj = $('#hfmsCity')
 							.select2('data');
+						var collegeObj = $('.hfmsCollegeName').select2('data');
 						var city;
+						var collegeId;
 						var state, config = {};
-						if (stateObj && cityObj) {
+						if (stateObj && cityObj && collegeObj)
+						{
+
 						    state = stateObj.text;
 						    city = cityObj.text;
+						    collegeId = collegeObj.id;
+
 						}
 						if (state && state.length > 0
 							&& city
-							&& city.length > 0) {
+							&& city.length > 0 && collegeId)
+						{
 						    config.jqSelector = ".hrfsSubmitStudentsForm";
 						    var constJSONParam = new ConstJSONParam(
 							    config);
@@ -413,6 +499,7 @@
 							    .getParamsValue();
 						    paramMap["state"] = state;
 						    paramMap["city"] = city;
+						    paramMap["collegeid"] = collegeId;
 						    ctDAO
 							    .addStudent(
 								    paramMap,
@@ -421,11 +508,14 @@
 									if (data
 										&& data.responseStatus == bmpUtil.RESPONSE_STATUS) {
 									    alert("Student added successfully");
+									    bmpUtil.reLoad();
 									} else {
 									    alert(data.responseMsg);
+									    bmpUtil.reLoad();
 									}
 								    });
-						} else {
+						} else
+						{
 						    alert("Please fill all the details");
 						}
 					    }

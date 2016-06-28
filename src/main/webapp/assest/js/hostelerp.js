@@ -3,7 +3,7 @@ function hfmsSetSelect2(jqSelector, url, label) {
 	dropdownCssClass : 'bmSelect2Class',
 	cache : "true",
 	placeholder : (label ? label : "Select your state"),
-	minimumInputLength : 2,
+	minimumInputLength : 1,
 	ajax : {
 	    url : url,
 	    dataType : 'json',

@@ -4,7 +4,10 @@ import hostelerp.com.dao.ProjectManagerDAO;
 import hostelerp.com.dao.UserMenuDAO;
 import hostelerp.com.model.Block;
 import hostelerp.com.model.CityState;
+import hostelerp.com.model.College;
 import hostelerp.com.model.Hostel;
+import hostelerp.com.model.Room;
+import hostelerp.com.model.RoomAllocation;
 import hostelerp.com.model.Student;
 import hostelerp.com.model.UserMenu;
 import hostelerp.com.model.Users;
@@ -292,5 +295,239 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 		userMenuDAO.addUserMenuRights(userMenu);
 	}
 
+	@Override
+	public void addColleges(College college) throws Exception
+	{
+		projectManagerDAO.addColleges(college);
+	}
+
+	@Override
+	public List<College> getColleges(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getColleges(startIndx, maxIndx, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public int getCollegesNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getCollegesNumEntries(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<College> getCollegesViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getCollegesViaSearchParam(startIndx, maxIndx,
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public int getCollegeNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getCollegeNumEntriesViaSearchParam(
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public List<College> getCollegeViaId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getCollegeViaId(id, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public void updateCollegesViaId(College college) throws Exception
+	{
+		projectManagerDAO.updateCollegesViaId(college);
+	}
+
+	@Override
+	public void deleteCollegeViaId(int id, String dEACTIVE) throws Exception
+	{
+		projectManagerDAO.deleteCollegeViaId(id, dEACTIVE);
+	}
+
+	@Override
+	public
+			List<Room>
+			getRooms(int startIndx, int maxIndx, String sTATUS_ACTIVE)
+					throws Exception
+	{
+		return projectManagerDAO.getRooms(startIndx, maxIndx, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public int getRoomsNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getRoomsNumEntries(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<Room> getRoomsViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getRoomsViaSearchParam(startIndx, maxIndx,
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public int getRoomsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getRoomsNumEntriesViaSearchParam(
+				sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public List<College> getAllCollegesViaStatus(String sTATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getAllCollegesViaStatus(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<Hostel> getHostelsViaCollegeId(int collegeId) throws Exception
+	{
+		return projectManagerDAO.getHostelsViaCollegeId(collegeId);
+	}
+
+	@Override
+	public List<Block> getBlockViaHostelId(int collegeId, int hostelId)
+			throws Exception
+	{
+		return projectManagerDAO.getBlockViaHostelId(collegeId, hostelId);
+	}
+
+	@Override
+	public void addRoom(Room room) throws Exception
+	{
+		projectManagerDAO.addRoom(room);
+	}
+
+	@Override
+	public List<Room> getRoomViaId(int id) throws Exception
+	{
+		return projectManagerDAO.getRoomViaId(id);
+	}
+
+	@Override
+	public List<Hostel> getHostelsViaRoomId(int id, String STATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getHostelsViaRoomId(id, STATUS_ACTIVE);
+	}
+
+	@Override
+	public List<Block> getBlocksViaRoomId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getBlocksViaRoomId(id, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public void updateRoomViaId(Room room) throws Exception
+	{
+		projectManagerDAO.updateRoomViaId(room);
+	}
+
+	@Override
+	public List<Block> getNoFloorsViaHostelAndBlockId(int hostelId,
+			int blockId, String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getNoFloorsViaHostelAndBlockId(hostelId,
+				blockId, sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<RoomAllocation> getRoomAllocationDetails(int startIndx,
+			int maxIndx, String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getRoomAllocationDetails(startIndx, maxIndx,
+				sTATUS_ACTIVE);
+	}
+
+	@Override
+	public int getRoomAllocationDetailsNumEntries(String sTATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO
+				.getRoomAllocationDetailsNumEntries(sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<RoomAllocation> getRoomAllocationDetailsViaSearchParam(
+			int startIndx, int maxIndx, String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getRoomAllocationDetailsViaSearchParam(
+				startIndx, maxIndx, sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public int getRoomAllocationDetailsNumEntriesViaSearchParam(
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO
+				.getRoomAllocationDetailsNumEntriesViaSearchParam(
+						sTATUS_ACTIVE, searchParameter);
+	}
+
+	@Override
+	public List<Student> getStudentViaCollegeId(int collegeId,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		return projectManagerDAO.getStudentViaCollegeId(collegeId,
+				sTATUS_ACTIVE);
+	}
+
+	@Override
+	public List<Hostel> getHostelViaCollegeId(int collegeId) throws Exception
+	{
+		return projectManagerDAO.getHostelViaCollegeId(collegeId);
+	}
+
+	@Override
+	public List<Room> getRoomNoViaHostelId(int hostelId, String STATUS_ACTIVE)
+			throws Exception
+	{
+		return projectManagerDAO.getRoomNoViaHostelId(hostelId, STATUS_ACTIVE);
+	}
+
+	@Override
+	public int chkIsAlloted(RoomAllocation roomAllocation) throws Exception
+	{
+		return projectManagerDAO.chkIsAlloted(roomAllocation);
+	}
+
+	@Override
+	public void addRoomAllocation(RoomAllocation roomAllocation)
+			throws Exception
+	{
+		projectManagerDAO.addRoomAllocation(roomAllocation);
+	}
+
+	@Override
+	public List<RoomAllocation> getRoomAllocationDetailsViaRoomId(
+			int roomAllocationId) throws Exception
+	{
+		return projectManagerDAO
+				.getRoomAllocationDetailsViaRoomId(roomAllocationId);
+	}
+
+	@Override
+	public void updateRoomAllocationViaId(RoomAllocation roomAllocation)
+			throws Exception
+	{
+		projectManagerDAO.updateRoomAllocationViaId(roomAllocation);
+	}
+
+	@Override
+	public int getRoomNoViaHostelId_RoomNo(int hostelId, int RoomNo)
+			throws Exception
+	{
+		return projectManagerDAO.getRoomNoViaHostelId_RoomNo(hostelId, RoomNo);
+	}
 
 }

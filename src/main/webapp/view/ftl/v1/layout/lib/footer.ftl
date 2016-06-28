@@ -21,6 +21,7 @@
 
 <script src="${baseURL}/assest/plugin/parsely.js"></script>
 <script src="${baseURL}/assest/js/hostelerp.js"></script>
+<script src="${baseURL}/assest/plugin/selectize.js"></script>
 </body>
 </html>
 <script type="text/javascript">

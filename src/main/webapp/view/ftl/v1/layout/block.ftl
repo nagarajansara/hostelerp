@@ -16,6 +16,7 @@
 							<thead>
 								<tr>
 									<th>Hostel Name</th>
+									<th>College Name</th>
 									<th>Block Name</th>
 									<th>No of floor</th>
 									<th>Manage</th>
@@ -89,7 +90,7 @@
 										placeholder="No of floor" jsonKey="nooffloor" required>
 								</div>
 								<input type="hidden" jsonKey="id" class="hfmsUpdateBlockId">
-								<button class="btn btn-primary" type="submit">Submit</button>
+								<button class="btn btn-primary" type="submit">Update</button>
 								<img class="hfmsLoader" src="${baseURL}/assest/img/index.gif" />
 							</form>
 						</div>
@@ -117,7 +118,7 @@
 
     hfmsSetSelect2("#hfmsHostelName", 'http://' + location.host + '/'
 	    + ctDAO.CONTEXT_NAME + '/api/manager/getHostelNameApi.json',
-	    'Select hostel name');
+	    'Type hostel name');
 
     $(".hfmsAddNewBtn").click(function() {
 	$(".hfmsAddRow").show();
@@ -131,6 +132,9 @@
     });
 
     var aoColumns = [ {
+	"mData" : "collegename",
+	'bSortable' : false
+    },{
 	"mData" : "hostelname",
 	'bSortable' : false
     }, {
@@ -155,21 +159,23 @@
 		    	var hostelName, config = {};
 		    	if(hostelObj)
 		    	    {
-		    			hostelName = hostelObj.text;
+		    			hostelName = hostelObj.id;
 		    			config.jqSelector = ".hrfsSubmitBlocksForm";
 					    var constJSONParam = new ConstJSONParam(
 						    config);
 					    var paramMap = constJSONParam
 						    .getParamsValue();
-					    paramMap["hostelname"] = hostelName
+					    paramMap["hostelid"] = hostelName
 					    ctDAO.addBlock(paramMap, function(data){
 							if(data && data.responseStatus == bmpUtil.RESPONSE_STATUS)
 							    {
 							    	alert("Block added successfully");
+							    	bmpUtil.reLoad();
 							    }
 							else
 							    {
 							    	alert(data.responseMsg);
+							    	bmpUtil.reLoad();
 							    }
 					    });
 
@@ -177,6 +183,7 @@
 		    	else
 		    	    {
 		    	    	alert("Please fill all the details");
+		    	    	bmpUtil.reLoad();
 		    	    }
 
 		    }
@@ -191,10 +198,12 @@
 				    if(data && data.responseStatus == bmpUtil.RESPONSE_STATUS)
 					{
 						alert("Deleted successfully");
+						bmpUtil.reLoad();
 					}
 				    else
 					{
 						alert(data.responseMsg);
+						bmpUtil.reLoad();
 					}
 				});
 		   }
@@ -216,8 +225,13 @@
 					    var constJSONParam = new ConstJSONParam(config);
 					    constJSONParam.setParamValue();
 					    $(".hfmsHostelNameParent").empty();
-					    $(".hfmsHostelNameParent").append("<label for=\"exampleInputEmail1\">City</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].hostelname + "\" id=\"hfmsUpdatedHostelName\" value=\""+ responseData[0].hostelname + "\">");
-					    hfmsSetSelect2("#hfmsUpdatedHostelName", 'http://' + location.host + '/'+ ctDAO.CONTEXT_NAME + '/api/manager/getCityApi.json', 'Select hostel name');
+					    $(".hfmsHostelNameParent").append("<label for=\"exampleInputEmail1\">Hostel Name</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].hostelname + "\" id=\"hfmsUpdatedHostelName\" value=\""+ responseData[0].hostelname + "\">");
+					    hfmsSetSelect2("#hfmsUpdatedHostelName", 'http://' + location.host + '/'+ ctDAO.CONTEXT_NAME + '/api/manager/getHostelNameApi.json', 'Type hostel name');
+					    $(
+					    "#hfmsUpdatedHostelName")
+					    .select2(
+						    'val',
+						    responseData[0].hostelid);
 				    }
 				else
 				    {
@@ -234,19 +248,21 @@
 		   	 var hostelName, config = {};
 		   	 if(hostelObj)
 		   	     {
-		   	  		hostelName = hostelObj.text;
+		   	  		hostelName = hostelObj.id;
 		   	     	config.jqSelector = ".hrfsUpdateSubmitBlocksForm";
 					var constJSONParam = new ConstJSONParam(config);
 					var paramMap = constJSONParam.getParamsValue();
-					paramMap["hostelname"] = hostelName;
+					paramMap["hostelid"] = hostelName;
 					ctDAO.updateBlockViaId(paramMap, function(data){
 						if(data && data.responseStatus == bmpUtil.RESPONSE_STATUS )
 						    {
 								alert("update successfully ");
+								bmpUtil.reLoad();
 						    }
 						else
 						    {
 						    	alert(data.responseMsg);
+						    	bmpUtil.reLoad();
 						    }
 					});
 		   	     }

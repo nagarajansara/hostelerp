@@ -285,6 +285,15 @@ public class Utilities
 		return DateToStr;
 
 	}
+	public String getDate()
+	{
+
+		Date curDate = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		String DateToStr = format.format(curDate);
+		return DateToStr;
+
+	}
 
 	public void setAccessCrossDomainResponse(HttpServletResponse res)
 	{

@@ -18,7 +18,6 @@
 									<th>Name</th>
 									<th>College Name</th>
 									<th>Mobile No</th>
-									<th>Address</th>
 									<th>State</th>
 									<th>City</th>
 									<th>Country</th>
@@ -75,7 +74,8 @@
 								</div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Country</label> <select
-										class="form-control m-bot15 hfmsCountry" jsonKey="country">
+										class="form-control m-bot15 hfmsCountry hfmsCommonHostelSelectize"  placeholder="Select Country" data-parsley-required jsonKey="country">
+										<option value=""></option>
 										<option value="india">India</option>
 									</select>
 								</div>
@@ -121,12 +121,13 @@
 								<div class="form-group hfmsCityParent"></div>
 								<div class="form-group">
 									<label for="exampleInputEmail1">Select Country</label> <select
-										class="form-control m-bot15 hfmsCountry" jsonKey="country">
+										class="form-control m-bot15 hfmsUpdateCountry hfmsCommonHostelSelectize" placeholder="Select Country" data-parsley-required jsonKey="country">
+										<option value=""></option>
 										<option value="india">India</option>
 									</select>
 								</div>
 								<input type="hidden" jsonKey="id" class="hfmsUpdateStudentId">
-								<button class="btn btn-primary" type="submit">Submit</button>
+								<button class="btn btn-primary" type="submit">Update</button>
 								<img class="hfmsLoader" src="${baseURL}/assest/img/index.gif" />
 							</form>
 						</div>
@@ -156,14 +157,14 @@
 
     hfmsSetSelect2("#hfmsCity", 'http://' + location.host + '/'
 	    + ctDAO.CONTEXT_NAME + '/api/manager/getCityApi.json',
-	    'Select city');
+	    'Type your city');
     hfmsSetSelect2("#hfmsState", 'http://' + location.host + '/'
 	    + ctDAO.CONTEXT_NAME + '/api/manager/getStateApi.json',
-	    'Select state');
+	    'Type your state');
 
     hfmsSetSelect2("#hfmsCollegeName", 'http://' + location.host + '/'
 	    + ctDAO.CONTEXT_NAME + '/api/manager/getCollegeNameApi.json',
-	    'Select college name');
+	    'Type your college name');
 
     $(".hfmsAddNewBtn").click(function() {
 	$(".hfmsAddRow").show();
@@ -176,19 +177,28 @@
 	$(".hfmsShowHostelDataRow").show();
     });
 
+
+    $(".hfmsCommonHostelSelectize").selectize({
+	    sortField:
+	    {
+		     field: "text",
+		     direction: "asc"
+	    }
+	});
+
     var aoColumns = [ {
 	"mData" : "name",
 	'bSortable' : false
     }, {
-	"mData" : "collegename",
+	"mData" : "collegeName",
 	'bSortable' : false
     }, {
 	"mData" : "mobileno",
 	'bSortable' : false
-    }, {
+    }/* , {
 	"mData" : "address",
 	'bSortable' : false
-    }, {
+    } */, {
 	"mData" : "state",
 	'bSortable' : false
     }, {
@@ -220,10 +230,12 @@
 							    && data.responseStatus == bmpUtil.RESPONSE_STATUS)
 						    {
 								alert("Deleted successfully");
+								bmpUtil.reLoad();
 						    }
 						else
 						    {
 								alert(data.responseMsg);
+								bmpUtil.reLoad();
 						    }
 				    })
 			    }
@@ -250,10 +262,17 @@
 		    $(".hfmsCollegeNameParent").empty();
 			$(".hfmsCityParent").append("<label for=\"exampleInputEmail1\">City</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].city + "\" id=\"hfmsUpdatedCity\" value=\""+ responseData[0].city + "\">");
 		   	$(".hfmsStateParent").append("<label for=\"exampleInputEmail1\">State</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].state + "\" id=\"hfmsUpdatedState\" value=\""+ responseData[0].state + "\">");
-		   	$(".hfmsCollegeNameParent").append("<label for=\"exampleInputEmail1\">College Name</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].collegename + "\" id=\"hfmsUpdatedCollegeName\" value=\""+ responseData[0].collegename + "\">");
+		   	$(".hfmsCollegeNameParent").append("<label for=\"exampleInputEmail1\">College Name</label><input style=\"width: 100%;\" type=\"hidden\" data-option=\""+ responseData[0].collegeName + "\" id=\"hfmsUpdatedCollegeName\" value=\""+ responseData[0].collegeName + "\">");
 		   	 hfmsSetSelect2("#hfmsUpdatedCity", 'http://' + location.host + '/'+ ctDAO.CONTEXT_NAME + '/api/manager/getCityApi.json', 'Select city');
 		   	 hfmsSetSelect2("#hfmsUpdatedState", 'http://' + location.host + '/'+ ctDAO.CONTEXT_NAME + '/api/manager/getStateApi.json','Select state');
 		   	 hfmsSetSelect2("#hfmsUpdatedCollegeName", 'http://' + location.host + '/'+ ctDAO.CONTEXT_NAME + '/api/manager/getCollegeNameApi.json','Select college name');
+		   	var selectize = $(".hfmsUpdateCountry")[0].selectize;
+		   	selectize.setValue(responseData[0].country);
+		    $(
+			    "#hfmsUpdatedCollegeName")
+			    .select2(
+				    'val',
+				    responseData[0].collegeid);
 		});
     });
 	$(".hrfsUpdateHostelsForm").submit(function(event){
@@ -269,21 +288,23 @@
 			{
 				state = stateObj.text;
 				city = cityObj.text;
-				colleneName = collegeObj.text;
+				colleneName = collegeObj.id;
 				config.jqSelector = ".hrfsUpdateHostelsForm";
 				var constJSONParam = new ConstJSONParam(config);
 				var paramMap = constJSONParam.getParamsValue();
 				paramMap["city"] = city;
 				paramMap["state"] = state;
-				paramMap["collegename"] = colleneName;
+				paramMap["collegeid"] = colleneName;
 				ctDAO.updateHostelViaId(paramMap, function(data){
 				    if (data
 					    && data.responseStatus == bmpUtil.RESPONSE_STATUS)
 				    {
 						alert("Update successfully");
+						bmpUtil.reLoad();
 				    } else
 				    {
 						alert(data.responseMsg);
+						bmpUtil.reLoad();
 				    }
 				});
 
@@ -309,13 +330,13 @@
 			    if (stateObj && cityObj && collegeObj) {
 				state = stateObj.text;
 				city = cityObj.text;
-				colleneName = collegeObj.text;
+				colleneName = collegeObj.id;
 				config.jqSelector = ".hrfsSubmitHostelsForm";
 				var constJSONParam = new ConstJSONParam(config);
 				var paramMap = constJSONParam.getParamsValue();
 				paramMap["city"] = city;
 				paramMap["state"] = state;
-				paramMap["collegename"] = colleneName;
+				paramMap["collegeid"] = colleneName;
 				ctDAO
 					.addHostel(
 						paramMap,
@@ -323,8 +344,10 @@
 						    if (data
 							    && data.responseStatus == bmpUtil.RESPONSE_STATUS) {
 							alert("Hostel added successfully");
+							bmpUtil.reLoad();
 						    } else {
-							alert(data.responseMsg);
+								alert(data.responseMsg);
+								bmpUtil.reLoad();
 						    }
 						});
 

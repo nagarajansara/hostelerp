@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.*;
@@ -46,89 +47,310 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 	final String GET_STATE =
 			"Select * from state where status =:status AND name like :name";
 	final String GET_STUDENTS =
-			"SELECT *,REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT c.name AS collegeName, s.*, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
 					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
-					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn "
-					+ "from student where status =:status ORDER BY created_at DESC LIMIT :startIndx, :endIndx";
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', s.id) AS editBtn "
+					+ "from student s INNER JOIN college c ON c.id = s.collegeid "
+					+ "where s.status =:status ORDER BY s.created_at DESC LIMIT :startIndx, :endIndx";
 	final String GET_STUDENTS_NUMENTRIES =
 			"SELECT count(*) from student where status =:status";
 	final String GET_STUDENT_VIA_SEARCHPARAM =
-			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT c.name AS collegeName, s.*, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
 					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
-					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn "
-					+ "from student where status =:status AND "
-					+ "(name LIKE :searchParam OR rollno LIKE :searchParam OR course LIKE :searchParam OR messtype LIKE :searchParam) "
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', s.id) AS editBtn "
+					+ "from student s INNER JOIN college c ON c.id = s.collegeid "
+					+ "where s.status =:status AND "
+					+ "(s.name LIKE :searchParam OR s.rollno LIKE :searchParam OR s.course LIKE :searchParam OR s.messtype LIKE :searchParam) "
 					+ "ORDER BY created_at LIMIT :startIndx, :endIndx";
 	final String GET_STUDENT_NUMENTRIES_VIA_SEARCHPARAM =
 			"SELECT count(*) from student where status =:status AND "
 					+ "(name LIKE :searchParam OR rollno LIKE :searchParam OR course LIKE :searchParam OR messtype LIKE :searchParam) ";
 	final String ADD_STUDENT =
-			"INSERT INTO student (name, rollno, batch, course, messtype, address, state, city, country, mobileno) "
-					+ "VALUES (:name, :rollno, :batch, :course, :messtype, :address, :state, :city, :country, :mobileno)";
+			"INSERT INTO student (name, rollno, batch, course, messtype, address, state, city, country, mobileno, collegeid) "
+					+ "VALUES (:name, :rollno, :batch, :course, :messtype, :address, :state, :city, :country, :mobileno, :collegeid)";
 	final String GET_STUDENTS_VIA_ID =
-			"Select * from student where id =:id AND status =:status";
+			"Select c.name AS collegeName, s.* from student s "
+					+ "INNER JOIN college c ON c.id = s.collegeid "
+					+ "where s.id =:id AND s.status =:status";
 	final String DELETE_STUDENTS_VIA_ID =
 			"Update student set status =:status where id =:id";
 	final String UPDATE_STUDENT_VIA_ID =
 			"UPDATE student set name =:name, batch =:batch, course =:course, "
-					+ "messtype =:messtype, address =:address, state =:state, city =:city, country =:country, mobileno =:mobileno, rollno =:rollno WHERE id =:id";
+					+ "messtype =:messtype, address =:address, state =:state, "
+					+ "city =:city, country =:country, mobileno =:mobileno, rollno =:rollno, collegeid =:collegeid WHERE id =:id";
 	final String GET_HOSTELS =
-			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT c.name AS collegeName, h.*, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
 					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
-					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn from hostel where status =:status ORDER BY createdat DESC LIMIT :startIndx, :maxIndx";
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', h.id) AS editBtn from hostel h "
+					+ "INNER JOIN college c ON c.id = h.collegeid "
+					+ " where h.status =:status ORDER BY h.createdat DESC LIMIT :startIndx, :maxIndx";
 	final String GET_HOSTEL_NUMENTRIES =
 			"Select count(*) from hostel where status =:status";
 	final String GET_HOSTELS_VIA_SEARCH_PARAMETER =
-			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT c.name AS collegeName, h.*, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
 					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
-					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', id) AS editBtn from hostel where status =:status AND (name LIKE :searchParam OR collegename LIKE :searchParam) "
-					+ "ORDER BY createdat DESC LIMIT :startIndx, :maxIndx";
+					+ "<i class=\"fa fa-info-circle\"></i> </button>', 'userid', h.id) AS editBtn from hostel h "
+					+ "INNER JOIN college c ON c.id = h.collegeid "
+					+ "where h.status =:status AND (h.name LIKE :searchParam) "
+					+ "ORDER BY h.createdat DESC LIMIT :startIndx, :maxIndx";
 	final String GET_SEARCHPARAM_HOSTEL_NUMENTRIES =
-			"Select count(*) from hostel where status =:status AND (name LIKE :searchParam OR collegename LIKE :searchParam)";
-	final String GET_COLLEGES =
+			"Select count(*) from hostel where status =:status AND (name LIKE :searchParam)";
+	final String GET_COLLEGES_API =
 			"SELECT * from college where status =:status AND name LIKE :name";
 	final String ADD_HOSTEL =
-			"INSERT INTO hostel (name, collegename, mobileno, address, state, city, country) "
-					+ "values(:name, :collegename, :mobileno, :address, :state, :city, :country)";
+			"INSERT INTO hostel (name, collegeid, mobileno, address, state, city, country) "
+					+ "values(:name, :collegeid, :mobileno, :address, :state, :city, :country)";
 	final String GET_HOSTEL_VIA_ID =
-			"Select * from hostel where status =:status AND id =:id";
-	final String UPDATE_HOSTEL_VIA_ID =
-			"Update hostel set name =:name, "
-					+ "collegename =:collegename, mobileno =:mobileno, address =:address, "
-					+ "state =:state, city =:city, country =:country where id =:id";
+			"Select c.name AS collegeName, h.* from hostel h "
+					+ "INNER JOIN college c ON c.id = h.collegeid "
+					+ "where h.status =:status AND h.id =:id";
+	final String UPDATE_HOSTEL_VIA_ID = "Update hostel set name =:name, "
+			+ "collegeid =:collegeid, mobileno =:mobileno, address =:address, "
+			+ "state =:state, city =:city, country =:country where id =:id";
 	final String DELETE_HOSTEL_VIA_ID =
 			"Update hostel set status =:status where id =:id";
 	final String GET_BLOCKS =
-			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT h.name AS hostelname, c.name AS collegename, b.*, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
 					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <!--<button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
-					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', id) AS editBtn from block where status =:status "
-					+ "ORDER BY createdat DESC LIMIT :startIndx, :endIndx";
+					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', b.id) AS editBtn from block b "
+					+ " INNER JOIN hostel h ON h.id = b.hostelid "
+					+ " INNER JOIN college c ON c.id = h.collegeid "
+					+ "where b.status =:status "
+					+ "ORDER BY b.createdat DESC LIMIT :startIndx, :endIndx";
 	final String GET_BLOCKS_NUMENTRIES =
 			"SELECT count(*) from block where status =:status ";
 	final String GET_BLOCKS_VIA_SEARCHPARAM =
-			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
+			"SELECT h.name AS hostelname, c.name AS collegename, b.*, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditWorker\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelWorker\">"
 					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <!--<button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
-					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', id) AS editBtn from block where status =:status  AND (hostelname LIKE :searchParameter OR blockname LIKE :searchParameter) "
-					+ "ORDER BY createdat DESC LIMIT :startIndx, :endIndx";
+					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', b.id) AS editBtn from block b "
+					+ " INNER JOIN hostel h ON h.id = b.hostelid "
+					+ " INNER JOIN college c ON c.id = h.collegeid "
+					+ "where b.status =:status  AND (b.blockname LIKE :searchParameter) "
+					+ "ORDER BY b.createdat DESC LIMIT :startIndx, :endIndx";
 	final String GET_BLOCKS_VIA_SEARCHPARAM_NUMENTRIES =
-			"SELECT count(*) from block where status =:status  AND (hostelname LIKE :searchParameter OR blockname LIKE :searchParameter) ";
+			"SELECT count(*) from block where status =:status  AND (blockname LIKE :searchParameter) ";
 	final String GET_HOSTEL_NAME_API =
-			"SELECT name from hostel where status =:status AND (name LIKE :hostelname)";
+			"SELECT CONCAT(h.name, ' - ', c.name) AS name, h.id FROM hostel h "
+					+ "INNER JOIN college c ON c.id = h.collegeid "
+					+ "where c.status =:status AND h.status =:status AND (h.name LIKE :hostelname)";
 	final String ADD_BLOCK =
-			"INSERT INTO block (hostelname, blockname, nooffloor) values (:hostelname, :blockname, :nooffloor)";
+			"INSERT INTO block (hostelid, blockname, nooffloor) values (:hostelid, :blockname, :nooffloor)";
 	final String GET_BLOCKS_VIA_ID =
-			"Select * from block where status =:status AND id =:id";
+			"Select h.name AS hostelname, b.* from block b "
+					+ " INNER JOIN hostel h ON h.id = b.hostelid "
+					+ "where b.status =:status AND b.id =:id";
 	final String UPDATE_BLOCKS_VIA_ID =
-			"UPdate block set hostelname =:hostelname, blockname =:blockname, nooffloor =:nooffloor where id =:id";
+			"UPdate block set hostelid =:hostelid, blockname =:blockname, nooffloor =:nooffloor where id =:id";
 	final String DELETE_BLOCK_VIA_ID =
 			"Update block set status =:status where id =:id";
 	final String GET_ALL_USERS = "SELECT * from users where status =:status";
+	final String ADD_COLLEGE =
+			"INSERT INTO college (name, address, state, city, country, mobileno) values (:name, :address, :state, :city, :country, :mobileno)";
+	final String GET_COLLEGES =
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <!--<button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', id) AS editBtn from college where status =:status LIMIT :startIndx, :endIndx";
+	final String GET_COLLEGES_NUMENTRIES =
+			"Select count(*) from college where status =:status";
+	final String GET_COLLEGES_VIA_SEARCHPARAM =
+			"SELECT *, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button> &nbsp; <!--<button pk_id=\"userid\" title=\"Info\" class=\"btn btn-default btn-xs btn-perspective hfmsInfo\">"
+					+ "<i class=\"fa fa-info-circle\"></i> </button>-->', 'userid', id) AS editBtn from college where status =:status AND (name LIKE :searchParam) LIMIT :startIndx, :endIndx";
+	final String GET_COLLEGES_VIA_SEARCHPARAM_NUMENTRIES =
+			"SELECT count(*) from college where status =:status AND (name LIKE :searchParam)";
+	final String GET_COLLEGES_VIA_ID =
+			"SELECT * from college where id =:id AND status =:status";
+	final String UPDATE_COLLEGE_VIA_ID =
+			"UPDATE college set name =:name, address =:address, state =:state, "
+					+ "city =:city, country =:country, mobileno =:mobileno where id =:id";
+	final String DELETE_COLLEGE_VIA_ID =
+			"UPDATE college set status =:status where id =:id";
+	final String CHK_COLLEGE_ID_REFERENCES =
+			"SELECT temp.name FROM (SELECT c.name AS NAME FROM hostel h "
+					+ "INNER JOIN college c "
+					+ "ON "
+					+ "c.id = h.collegeid where c.id =:id AND h.status =:status "
+					+ "UNION "
+					+ "SELECT c.name AS NAME FROM student s "
+					+ "INNER JOIN college c "
+					+ "ON "
+					+ "c.id = s.collegeid where c.id =:id AND s.status =:status) AS temp";
+	final String GET_ROOMS =
+			"SELECT c.name AS collegename, h.name AS hostelname, b.blockname, r.floorname, r.noofperson, r.roomtype,  REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', r.id) AS editBtn FROM room r "
+					+ "INNER JOIN hostel h "
+					+ "ON h.id = r.hostelid "
+					+ "INNER JOIN block b "
+					+ "ON b.id = r.blockid "
+					+ "INNER JOIN college c "
+					+ "ON c.id = h.collegeid where r.status =:status ORDER BY r.created_at DESC LIMIT :startIndx, :maxIndx";
+	final String GET_ROOMS_NUMENTRIES =
+			"Select count(*) from room where status =:status";
+	final String GET_ROOMS_VIA_SEARCHPARAMETER =
+			"SELECT c.name AS collegename, h.name AS hostelname, b.blockname, r.floorname, r.noofperson, r.roomtype, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', r.id) AS editBtn FROM room r "
+					+ "INNER JOIN hostel h "
+					+ "ON h.id = r.hostelid "
+					+ "INNER JOIN block b "
+					+ "ON b.id = r.blockid "
+					+ "INNER JOIN college c "
+					+ "ON c.id = h.collegeid where r.status =:status AND "
+					+ "(r.floorname LIKE :searchParam OR r.noofperson LIKE :searchParam) "
+					+ "ORDER BY r.created_at DESC LIMIT :startIndx, :maxIndx";
+	final String GET_ROOMS_NUMENTRIES_VIA_SEARCHPARAMETER =
+			"Select count(*) from room r where r.status =:status AND (r.floorname LIKE :searchParam OR r.noofperson LIKE :searchParam)";
+	final String GET_ALL_COLLEGES_VIA_STATUS =
+			"Select * from college where status =:status";
+	final String GET_HOSTEL_VIA_COLLEGE_ID =
+			"SELECT h.id, h.name FROM hostel h "
+					+ "INNER JOIN "
+					+ "college c "
+					+ "ON "
+					+ "c.id = h.collegeid where c.id =:id AND h.status =:status";
+	final String GET_BLOCKS_VIA_HOSTELID =
+			"SELECT b.id, b.blockname, b.nooffloor FROM block b "
+					+ "INNER JOIN hostel h ON " + "h.id = b.hostelid "
+					+ "WHERE b.hostelid =:id AND b.status =:status ";
+	final String ADD_ROOM =
+			"INSERT INTO room (roomno, hostelid, blockid, roomtype, floorname, noofperson) "
+					+ "VALUES (:roomno, :hostelid, :blockid, :roomtype, :floorname, :noofperson)";
+	final String GET_ROOM_VIA_ID =
+			"SELECT c.id AS collegeid, c.name AS collegename, h.name  AS hostelname, "
+					+ "b.blockname, r.id, b.id AS blockid, r.roomtype, r.id, "
+					+ "r.roomno, r.floorname, r.noofperson, r.hostelid FROM room r "
+					+ "INNER JOIN  " + "block b  " + "ON b.id = r.blockid "
+					+ "INNER JOIN  " + "hostel h " + "ON "
+					+ "h.id = r.hostelid " + "INNER JOIN  " + "college c "
+					+ "ON c.id = h.collegeid where r.id =:id ";
+	final String GET_HOSTELS_VIA_ROOM_ID =
+			"SELECT h.id, h.name FROM "
+					+ "(SELECT c.id FROM college c "
+					+ "INNER JOIN "
+					+ "hostel h "
+					+ "ON c.id = h.collegeid "
+					+ "INNER JOIN room r "
+					+ "ON r.hostelid = h.id "
+					+ "WHERE r.id =:id) AS a, hostel h WHERE a.id = h.collegeid AND h.status =:status";
+	final String GET_BLOCKS_VIA_ROOM_ID =
+			"SELECT b.id, b.blockname, b.nooffloor FROM room r "
+					+ "INNER JOIN  " + "hostel h " + "ON  "
+					+ "r.hostelid = h.id " + "INNER JOIN  " + "block b "
+					+ "ON  " + "b.hostelid = r.hostelid "
+					+ "WHERE r.id =:id AND b.status =:status";
+
+	final String UPDATE_ROOM_VIA_ID =
+			"UPDATE room set roomno =:roomno, hostelid =:hostelid, blockid =:blockid, "
+					+ "roomtype =:roomtype, floorname =:floorname, noofperson =:noofperson  "
+					+ "WHERE id =:id";
+	final String GET_BLOCKS_VIA_HOSTEL_BLOCK_ID =
+			"SELECT * from block where hostelid =:hostelid AND id =:id AND status =:status";
+	final String GET_ROOM_ALLOCATION_DETAILS =
+			"SELECT ra.status AS roomallocationstatus, ra.roomid, s.name AS studentname, s.collegeid, s.rollno, c.name AS collegename, s.rollno, h.name As hostelname, ra.entry_date, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', ra.id) AS editBtn "
+					+ "FROM (SELECT rt.roomid, rt.id, rt.created_at, rt.entry_date, rt.status, rt.studentid "
+					+ "FROM room_allocation rt "
+					+ "INNER JOIN (SELECT MAX(id) AS id FROM room_allocation "
+					+ "GROUP BY studentid) AS d "
+					+ "ON d.id = rt.id ) AS ra "
+					+ "INNER JOIN "
+					+ "room r "
+					+ "ON "
+					+ "r.id = ra.roomid "
+					+ "INNER JOIN hostel h ON h.id = r.hostelid "
+					+ "INNER JOIN student s "
+					+ "ON s.id = ra.studentid "
+					+ "INNER JOIN college c "
+					+ "ON c.id = s.collegeid WHERE ra.status !=:status LIMIT :startIndx, :maxIndx";
+	final String GET_ROOM_ALLOCATION_DETAILS_NUMENTRIES =
+			"SELECT count(*) FROM room_allocation AS ra " + "INNER JOIN "
+					+ "room r " + "ON " + "r.id = ra.roomid "
+					+ "INNER JOIN hostel h ON h.id = r.hostelid "
+					+ "INNER JOIN student s " + "ON s.id = ra.studentid "
+					+ "INNER JOIN college c "
+					+ "ON c.id = s.collegeid WHERE ra.status !=:status";
+	final String GET_ROOM_ALLOCATION_DETAILS_VIA_SEARCHPARAM =
+			"SELECT ra.status AS roomallocationstatus, ra.roomid, s.name AS studentname, s.collegeid, c.name AS collegename, s.rollno, h.name As hostelname, ra.entry_date, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', ra.id) AS editBtn  "
+					+ "FROM (SELECT rt.roomid, rt.id, rt.created_at, rt.entry_date, rt.status, rt.studentid "
+					+ "FROM room_allocation rt "
+					+ "INNER JOIN (SELECT MAX(id) AS id FROM room_allocation "
+					+ "GROUP BY studentid) AS d "
+					+ "ON d.id = rt.id ) AS ra "
+					+ "INNER JOIN "
+					+ "room r "
+					+ "ON "
+					+ "r.id = ra.roomid "
+					+ "INNER JOIN hostel h ON h.id = r.hostelid "
+					+ "INNER JOIN student s "
+					+ "ON s.id = ra.studentid "
+					+ "INNER JOIN college c "
+					+ "ON c.id = s.collegeid WHERE ra.status !=:status AND (h.name LIKE :searchParam OR c.name LIKE :searchParam OR s.rollno LIKE :searchParam) LIMIT :startIndx, :maxIndx";
+	final String GET_ROOM_ALLOCATION_DETAILS_VIA_SEARCHPARAM_NUMENTRIES =
+			"SELECT count(*) FROM room_allocation AS ra "
+					+ "INNER JOIN "
+					+ "room r "
+					+ "ON "
+					+ "r.id = ra.roomid "
+					+ "INNER JOIN hostel h ON h.id = r.hostelid "
+					+ "INNER JOIN student s "
+					+ "ON s.id = ra.studentid "
+					+ "INNER JOIN college c "
+					+ "ON c.id = s.collegeid WHERE ra.status !=:status AND (h.name LIKE :searchParam OR c.name LIKE :searchParam OR s.rollno LIKE :searchParam)";
+	final String GET_STUDENT_VIA_COLLEGE_ID =
+			"SELECT CONCAT(s.rollno, ' - ', s.NAME) AS NAME, s.id  FROM student s  LEFT OUTER JOIN  room_allocation ra "
+					+ "ON ra.studentid = s.id "
+					+ "WHERE s.collegeid =:collegeId AND s.status =:status AND (ra.status <> 'alloted' OR ra.id IS NULL)";
+	final String GET_COLLGES_VIA_COLLGE_ID =
+			"SELECT * from hostel where collegeid =:collegeId AND status =:status";
+	final String GET_ROOMS_VIA_HOSTEL_ID =
+			"SELECT r.roomno, r.id AS roomid, IFNULL(ra.rowcount,r.noofperson) AS seatsavailable "
+					+ "FROM room r "
+					+ "LEFT OUTER JOIN "
+					+ "(SELECT h.roomid,(r.noofperson - COUNT(*)) AS rowcount "
+					+ "FROM "
+					+ "room_allocation h "
+					+ "INNER JOIN room r ON h.roomid = r.id "
+					+ "WHERE h.status = 'alloted' "
+					+ "GROUP BY h.roomid) ra ON r.id = ra.roomid "
+					+ "WHERE r.status =:status AND r.hostelid =:hostelId AND (ra.rowcount > 0 OR ra.roomid IS NULL)";
+	final String CHK_ROOM_ALLOTED =
+			"Select count(*) from room_allocation where studentid =:studentid AND status =:status";
+	final String ADD_ROOM_ALLOCATION =
+			"INSERT INTO room_allocation (roomid, studentid, entry_date) VALUES (:roomid, :studentid, :entry_date)";
+	final String GET_ROOM_ALLOCATION_VIA_ROOM_ALLOCATIONID =
+			"SELECT ra.roomid, ra.id AS roomallocationid, r.roomno, CONCAT(s.rollno, ' - ', s.name) AS studentname, "
+					+ "s.id AS studentid, h.id AS hostelid, c.id AS collegeid, ra.status AS roomallocationstatus "
+					+ "FROM room_allocation ra "
+					+ "INNER JOIN room r ON r.id = ra.roomid "
+					+ "INNER JOIN student s ON s.id = ra.studentid "
+					+ "INNER JOIN  hostel h ON h.id = r.hostelid "
+					+ "INNER JOIN college c ON h.collegeid = c.id "
+					+ "WHERE ra.id =:roomId " + "GROUP BY h.name, c.name";
+	final String UPDATE_ROOM_ALLOCATION_VIA_ID =
+			"Update room_allocation set roomid =:roomid, studentid =:studentid, last_modified =:last_modified, status =:status where id =:id";
+	final String GET_ROOMS_VIA_HOSTEL_ID_AND_ROOMNO =
+			"SELECT count(*) "
+					+ "FROM room r "
+					+ "LEFT OUTER JOIN "
+					+ "(SELECT h.roomid,(r.noofperson - COUNT(*)) AS rowcount "
+					+ "FROM "
+					+ "room_allocation h "
+					+ "INNER JOIN room r ON h.roomid = r.id "
+					+ "WHERE h.status = 'alloted' "
+					+ "GROUP BY h.roomid) ra ON r.id = ra.roomid "
+					+ "WHERE  r.hostelid =:hostelId AND  r.roomno =:roomno  AND (ra.rowcount > 0 OR ra.roomid IS NULL)";
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -308,6 +530,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("city", student.getCity());
 		paramMap.put("country", student.getCountry());
 		paramMap.put("mobileno", student.getMobileno());
+		paramMap.put("collegeid", student.getCollegeid());
 
 		namedParameterJdbcTemplate.update(ADD_STUDENT, paramMap);
 
@@ -349,6 +572,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("mobileno", student.getMobileno());
 		paramMap.put("id", student.getId());
 		paramMap.put("rollno", student.getRollno());
+		paramMap.put("collegeid", student.getCollegeid());
 
 		namedParameterJdbcTemplate.update(UPDATE_STUDENT_VIA_ID, paramMap);
 	}
@@ -389,7 +613,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("name", locationname + "%");
 		paramMap.put("status", status);
 
-		return namedParameterJdbcTemplate.query(GET_COLLEGES, paramMap,
+		return namedParameterJdbcTemplate.query(GET_COLLEGES_API, paramMap,
 				new BeanPropertyRowMapper(Hostel.class));
 	}
 
@@ -398,7 +622,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 	{
 		Map paramMap = new HashMap();
 		paramMap.put("name", hostel.getName());
-		paramMap.put("collegename", hostel.getCollegename());
+		paramMap.put("collegeid", hostel.getCollegeid());
 		paramMap.put("mobileno", hostel.getMobileno());
 		paramMap.put("address", hostel.getAddress());
 		paramMap.put("state", hostel.getState());
@@ -425,7 +649,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 	{
 		Map paramMap = new HashMap();
 		paramMap.put("name", hostel.getName());
-		paramMap.put("collegename", hostel.getCollegename());
+		paramMap.put("collegeid", hostel.getCollegeid());
 		paramMap.put("mobileno", hostel.getMobileno());
 		paramMap.put("address", hostel.getAddress());
 		paramMap.put("state", hostel.getState());
@@ -537,7 +761,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 	public void addBlock(Block block) throws Exception
 	{
 		Map paramMap = new HashMap();
-		paramMap.put("hostelname", block.getHostelname());
+		paramMap.put("hostelid", block.getHostelid());
 		paramMap.put("blockname", block.getBlockname());
 		paramMap.put("nooffloor", block.getNooffloor());
 
@@ -560,7 +784,7 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 	public void updateBlockViaId(Block block) throws Exception
 	{
 		Map paramMap = new HashMap();
-		paramMap.put("hostelname", block.getHostelname());
+		paramMap.put("hostelid", block.getHostelid());
 		paramMap.put("blockname", block.getBlockname());
 		paramMap.put("nooffloor", block.getNooffloor());
 		paramMap.put("id", block.getId());
@@ -586,6 +810,423 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 		paramMap.put("status", sTATUS_ACTIVE);
 		return namedParameterJdbcTemplate.query(GET_ALL_USERS, paramMap,
 				new BeanPropertyRowMapper(Users.class));
+	}
+
+	@Override
+	public void addColleges(College college) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", college.getName());
+		paramMap.put("address", college.getAddress());
+		paramMap.put("state", college.getState());
+		paramMap.put("city", college.getCity());
+		paramMap.put("country", college.getcountry());
+		paramMap.put("mobileno", college.getMobileno());
+
+		namedParameterJdbcTemplate.update(ADD_COLLEGE, paramMap);
+	}
+
+	@Override
+	public List<College> getColleges(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+
+		return namedParameterJdbcTemplate.query(GET_COLLEGES, paramMap,
+				new BeanPropertyRowMapper<College>(College.class));
+
+	}
+
+	@Override
+	public int getCollegesNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+
+		return namedParameterJdbcTemplate.queryForInt(GET_COLLEGES_NUMENTRIES,
+				paramMap);
+
+	}
+
+	@Override
+	public List<College> getCollegesViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate.query(GET_COLLEGES_VIA_SEARCHPARAM,
+				paramMap, new BeanPropertyRowMapper<College>(College.class));
+	}
+
+	@Override
+	public int getCollegeNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParam", searchParameter + "%");
+
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_COLLEGES_VIA_SEARCHPARAM_NUMENTRIES, paramMap);
+	}
+
+	@Override
+	public List<College> getCollegeViaId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("id", id);
+
+		return namedParameterJdbcTemplate.query(GET_COLLEGES_VIA_ID, paramMap,
+				new BeanPropertyRowMapper(College.class));
+	}
+
+	@Override
+	public void updateCollegesViaId(College college) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("name", college.getName());
+		paramMap.put("address", college.getAddress());
+		paramMap.put("state", college.getState());
+		paramMap.put("city", college.getCity());
+		paramMap.put("country", college.getcountry());
+		paramMap.put("mobileno", college.getMobileno());
+		paramMap.put("id", college.getId());
+
+		namedParameterJdbcTemplate.update(UPDATE_COLLEGE_VIA_ID, paramMap);
+	}
+
+	@Override
+	public void deleteCollegeViaId(int id, String dEACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", id);
+		paramMap.put("status", "active");
+		List<College> list =
+				namedParameterJdbcTemplate.query(CHK_COLLEGE_ID_REFERENCES,
+						paramMap, new BeanPropertyRowMapper(College.class));
+		if (list.size() == 0)
+		{
+			paramMap.put("status", dEACTIVE);
+			namedParameterJdbcTemplate.update(DELETE_COLLEGE_VIA_ID, paramMap);
+		} else
+		{
+			throw new ConstException(ConstException.ERR_CODE_REFERENCES_KEY,
+					ConstException.ERR_MSG_REFERENCES_KEY);
+		}
+
+	}
+
+	@Override
+	public
+			List<Room>
+			getRooms(int startIndx, int maxIndx, String sTATUS_ACTIVE)
+					throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("maxIndx", maxIndx);
+		return namedParameterJdbcTemplate.query(GET_ROOMS, paramMap,
+				new BeanPropertyRowMapper<Room>(Room.class));
+
+	}
+
+	@Override
+	public int getRoomsNumEntries(String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.queryForInt(GET_ROOMS_NUMENTRIES,
+				paramMap);
+	}
+
+	@Override
+	public List<Room> getRoomsViaSearchParam(int startIndx, int maxIndx,
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("maxIndx", maxIndx);
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate.query(GET_ROOMS_VIA_SEARCHPARAMETER,
+				paramMap, new BeanPropertyRowMapper<Room>(Room.class));
+	}
+
+	@Override
+	public int getRoomsNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_ROOMS_NUMENTRIES_VIA_SEARCHPARAMETER, paramMap);
+	}
+
+	@Override
+	public List<College> getAllCollegesViaStatus(String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.query(GET_ALL_COLLEGES_VIA_STATUS,
+				paramMap, new BeanPropertyRowMapper<College>(College.class));
+	}
+
+	@Override
+	public List<Hostel> getHostelsViaCollegeId(int collegeId) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", collegeId);
+		paramMap.put("status", "active");
+		return namedParameterJdbcTemplate.query(GET_HOSTEL_VIA_COLLEGE_ID,
+				paramMap, new BeanPropertyRowMapper<Hostel>(Hostel.class));
+	}
+
+	@Override
+	public List<Block> getBlockViaHostelId(int collegeId, int hostelId)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", hostelId);
+		paramMap.put("status", "active");
+
+		return namedParameterJdbcTemplate.query(GET_BLOCKS_VIA_HOSTELID,
+				paramMap, new BeanPropertyRowMapper<Block>(Block.class));
+	}
+
+	@Override
+	public void addRoom(Room room) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("roomno", room.getRoomno());
+		paramMap.put("hostelid", room.getHostelid());
+		paramMap.put("blockid", room.getBlockid());
+		paramMap.put("roomtype", room.getRoomtype());
+		paramMap.put("floorname", room.getFloorname());
+		paramMap.put("noofperson", room.getNoofperson());
+
+		namedParameterJdbcTemplate.update(ADD_ROOM, paramMap);
+	}
+
+	@Override
+	public List<Room> getRoomViaId(int id) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", id);
+		return namedParameterJdbcTemplate.query(GET_ROOM_VIA_ID, paramMap,
+				new BeanPropertyRowMapper<Room>(Room.class));
+	}
+
+	@Override
+	public List<Hostel> getHostelsViaRoomId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", id);
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.query(GET_HOSTELS_VIA_ROOM_ID,
+				paramMap, new BeanPropertyRowMapper(Hostel.class));
+	}
+
+	@Override
+	public List<Block> getBlocksViaRoomId(int id, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", id);
+		paramMap.put("status", sTATUS_ACTIVE);
+
+		return namedParameterJdbcTemplate.query(GET_BLOCKS_VIA_ROOM_ID,
+				paramMap, new BeanPropertyRowMapper<Block>(Block.class));
+	}
+
+	@Override
+	public void updateRoomViaId(Room room) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", room.getId());
+		paramMap.put("roomno", room.getRoomno());
+		paramMap.put("hostelid", room.getHostelid());
+		paramMap.put("blockid", room.getBlockid());
+		paramMap.put("roomtype", room.getRoomtype());
+		paramMap.put("floorname", room.getFloorname());
+		paramMap.put("noofperson", room.getNoofperson());
+
+		namedParameterJdbcTemplate.update(UPDATE_ROOM_VIA_ID, paramMap);
+	}
+
+	@Override
+	public List<Block> getNoFloorsViaHostelAndBlockId(int hostelId,
+			int blockId, String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", blockId);
+		paramMap.put("hostelid", hostelId);
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.query(GET_BLOCKS_VIA_HOSTEL_BLOCK_ID,
+				paramMap, new BeanPropertyRowMapper<Block>(Block.class));
+	}
+
+	@Override
+	public List<RoomAllocation> getRoomAllocationDetails(int startIndx,
+			int maxIndx, String sTATUS_ACTIVE) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("maxIndx", maxIndx);
+		return namedParameterJdbcTemplate.query(GET_ROOM_ALLOCATION_DETAILS,
+				paramMap, new BeanPropertyRowMapper<RoomAllocation>(
+						RoomAllocation.class));
+
+	}
+
+	@Override
+	public int getRoomAllocationDetailsNumEntries(String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_ROOM_ALLOCATION_DETAILS_NUMENTRIES, paramMap);
+	}
+
+	@Override
+	public List<RoomAllocation> getRoomAllocationDetailsViaSearchParam(
+			int startIndx, int maxIndx, String sTATUS_ACTIVE,
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("maxIndx", maxIndx);
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate
+				.query(GET_ROOM_ALLOCATION_DETAILS_VIA_SEARCHPARAM, paramMap,
+						new BeanPropertyRowMapper<RoomAllocation>(
+								RoomAllocation.class));
+	}
+
+	@Override
+	public int getRoomAllocationDetailsNumEntriesViaSearchParam(
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("status", sTATUS_ACTIVE);
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_ROOM_ALLOCATION_DETAILS_VIA_SEARCHPARAM_NUMENTRIES,
+				paramMap);
+	}
+
+	@Override
+	public List<Student> getStudentViaCollegeId(int collegeId,
+			String sTATUS_ACTIVE) throws Exception
+	{
+
+		Map paramMap = new HashMap();
+		paramMap.put("collegeId", collegeId);
+		paramMap.put("status", sTATUS_ACTIVE);
+
+		return namedParameterJdbcTemplate.query(GET_STUDENT_VIA_COLLEGE_ID,
+				paramMap, new BeanPropertyRowMapper<Student>(Student.class));
+
+	}
+
+	@Override
+	public List<Hostel> getHostelViaCollegeId(int collegeId) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("collegeId", collegeId);
+		paramMap.put("status", "active");
+
+		return namedParameterJdbcTemplate.query(GET_COLLGES_VIA_COLLGE_ID,
+				paramMap, new BeanPropertyRowMapper<Hostel>(Hostel.class));
+	}
+
+	@Override
+	public List<Room> getRoomNoViaHostelId(int hostelId, String sTATUS_ACTIVE)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("hostelId", hostelId);
+		paramMap.put("status", "active");
+
+		return namedParameterJdbcTemplate.query(GET_ROOMS_VIA_HOSTEL_ID,
+				paramMap, new BeanPropertyRowMapper<Room>(Room.class));
+	}
+
+	@Override
+	public int chkIsAlloted(RoomAllocation roomAllocation) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("studentid", roomAllocation.getStudentid());
+		paramMap.put("status", "alloted");
+
+		return namedParameterJdbcTemplate.queryForInt(CHK_ROOM_ALLOTED,
+				paramMap);
+	}
+
+	@Override
+	public void addRoomAllocation(RoomAllocation roomAllocation)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("roomid", roomAllocation.getRoomid());
+		paramMap.put("studentid", roomAllocation.getStudentid());
+		paramMap.put("entry_date", roomAllocation.getEntry_date());
+
+		namedParameterJdbcTemplate.update(ADD_ROOM_ALLOCATION, paramMap);
+
+	}
+
+	@Override
+	public List<RoomAllocation> getRoomAllocationDetailsViaRoomId(
+			int roomAllocationId) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("roomId", roomAllocationId);
+		return namedParameterJdbcTemplate
+				.query(GET_ROOM_ALLOCATION_VIA_ROOM_ALLOCATIONID, paramMap,
+						new BeanPropertyRowMapper<RoomAllocation>(
+								RoomAllocation.class));
+	}
+
+	@Override
+	public void updateRoomAllocationViaId(RoomAllocation roomAllocation)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("roomid", roomAllocation.getRoomid());
+		paramMap.put("studentid", roomAllocation.getStudentid());
+		paramMap.put("last_modified", roomAllocation.getLast_modified());
+		paramMap.put("status", roomAllocation.getStatus());
+		paramMap.put("id", roomAllocation.getId());
+
+		namedParameterJdbcTemplate.update(UPDATE_ROOM_ALLOCATION_VIA_ID,
+				paramMap);
+
+	}
+
+	public int getRoomNoViaHostelId_RoomNo(int hostelId, int RoomNo)
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("hostelId", hostelId);
+		paramMap.put("roomno", RoomNo);
+
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_ROOMS_VIA_HOSTEL_ID_AND_ROOMNO, paramMap);
+
 	}
 
 }
