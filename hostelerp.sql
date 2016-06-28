@@ -22,19 +22,19 @@ DROP TABLE IF EXISTS `block`;
 
 CREATE TABLE `block` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hostelname` varchar(100) NOT NULL,
+  `hostelid` int(100) NOT NULL DEFAULT '0',
   `blockname` varchar(100) NOT NULL,
   `nooffloor` int(11) DEFAULT NULL,
   `status` enum('active','deactive') NOT NULL DEFAULT 'active',
   `createdat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`hostelname`,`blockname`),
+  PRIMARY KEY (`hostelid`,`blockname`),
   UNIQUE KEY `NewIndex1` (`id`),
-  KEY `NewIndex2` (`hostelname`,`blockname`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+  KEY `NewIndex2` (`hostelid`,`blockname`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 /*Data for the table `block` */
 
-insert  into `block`(`id`,`hostelname`,`blockname`,`nooffloor`,`status`,`createdat`) values (5,'DOD Son','A',1,'active','2016-06-08 15:25:46'),(6,'DOD Son','Naga',2,'active','2016-06-08 16:44:56'),(7,'DOD Son','Nagarajan',101,'active','2016-06-11 17:21:25');
+insert  into `block`(`id`,`hostelid`,`blockname`,`nooffloor`,`status`,`createdat`) values (6,19,'AB',4,'active','2016-06-25 16:13:07'),(7,19,'ABC',3,'active','2016-06-25 16:13:20'),(4,20,'A',4,'active','2016-06-25 16:12:08'),(5,20,'B',2,'active','2016-06-25 16:12:25'),(8,22,'STEP',4,'active','2016-06-28 17:52:20');
 
 /*Table structure for table `city` */
 
@@ -57,14 +57,23 @@ insert  into `city`(`id`,`name`,`status`) values (1217,'','active'),(293,'Achalp
 DROP TABLE IF EXISTS `college`;
 
 CREATE TABLE `college` (
-  `id` int(10) DEFAULT NULL,
-  `name` varchar(50) DEFAULT NULL,
-  `status` enum('active','deactive') DEFAULT 'active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `image` varchar(50) DEFAULT '',
+  `address` text,
+  `state` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `country` varchar(50) DEFAULT NULL,
+  `mobileno` varchar(50) DEFAULT NULL,
+  `status` enum('active','deactive') DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`name`),
+  UNIQUE KEY `NewIndex1` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 /*Data for the table `college` */
 
-insert  into `college`(`id`,`name`,`status`) values (1,'bhc','active');
+insert  into `college`(`id`,`name`,`image`,`address`,`state`,`city`,`country`,`mobileno`,`status`,`created_at`) values (1,'Bishop heber college','','Namakkal, K.M.Devi(P.o), P.velur(T.K)\n','Kerala','Tadpatri','india','9976625471','active','2016-06-17 17:37:47'),(2,'KCE','','Namakkal-637213','Tamil Nadu','Coimbatore','india','9976625471','active','2016-06-22 17:04:06'),(4,'Kumara Guru','','Coimbatore','Tamil Nadu','Coimbatore','india','2001','active','2016-06-28 17:13:51'),(3,'PSG','','Coimbatore','Tamil Nadu','Coimbatore','india','9973325621','active','2016-06-28 17:01:18');
 
 /*Table structure for table `hostel` */
 
@@ -73,7 +82,7 @@ DROP TABLE IF EXISTS `hostel`;
 CREATE TABLE `hostel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `collegename` varchar(100) NOT NULL,
+  `collegeid` int(100) NOT NULL,
   `image` varchar(100) DEFAULT '',
   `mobileno` varchar(50) DEFAULT NULL,
   `address` text,
@@ -82,13 +91,13 @@ CREATE TABLE `hostel` (
   `status` enum('active','deactive') NOT NULL DEFAULT 'active',
   `country` enum('india') DEFAULT 'india',
   `createdat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`name`,`collegename`),
+  PRIMARY KEY (`name`,`collegeid`),
   UNIQUE KEY `NewIndex1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 
 /*Data for the table `hostel` */
 
-insert  into `hostel`(`id`,`name`,`collegename`,`image`,`mobileno`,`address`,`state`,`city`,`status`,`country`,`createdat`) values (10,'b','bhc','','435456425','Namakkal - 637213','Rajasthan','Chennai','active','india','2016-06-07 19:54:48'),(6,'DOD Son','bhc','','4543254','Namakkal','Tamil Nadu','Coimbatore','active','india','2016-06-07 19:49:08'),(1,'Naga','bhc',NULL,'9976625471','Namakkal- 637213','Kerala','Thirumangalam','active','india','2016-06-07 19:39:28'),(8,'Sara','bhc','','4545','Namakkal','Tamil Nadu','Coimbatore','active','india','2016-06-07 19:51:48');
+insert  into `hostel`(`id`,`name`,`collegeid`,`image`,`mobileno`,`address`,`state`,`city`,`status`,`country`,`createdat`) values (21,'Boys',4,'','9976625471','Coimbatore','Tamil Nadu','Coimbatore','active','india','2016-06-28 17:42:06'),(19,'Dod Son',2,'','9976625471','Trichy','Tamil Nadu','Coimbatore','active','india','2016-06-25 16:10:41'),(20,'Ladies',1,'','9976625471','Trichy','Tamil Nadu','Coimbatore','active','india','2016-06-25 16:11:01'),(22,'STEP HOSTEL',3,'','3425545','Coimbatore','Tamil Nadu','Coimbatore','active','india','2016-06-28 17:51:51');
 
 /*Table structure for table `menu_mas` */
 
@@ -106,11 +115,52 @@ CREATE TABLE `menu_mas` (
   `is_projectmanager_menu` enum('yes','no') NOT NULL DEFAULT 'no',
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
   PRIMARY KEY (`menu_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 /*Data for the table `menu_mas` */
 
-insert  into `menu_mas`(`menu_id`,`menu_name`,`menu_level`,`slno`,`is_parent`,`parent_id`,`menu_url`,`menu_icon`,`is_projectmanager_menu`,`status`) values (1,'College',1,1,'yes',0,'#','fa fa-globe','no','active'),(2,'Hostel',1,2,'yes',0,'api/manager/get_hostel','fa fa-building-o','no','active'),(3,'Block',1,3,'yes',0,'api/manager/get_block','fa fa-flash','no','active'),(4,'Student',1,4,'yes',0,'api/manager/get_student','fa fa-user','no','active'),(5,'Users',1,5,'yes',0,'api/manager/users_index','fa fa-users','yes','active'),(6,'UserMenu',1,6,'yes',0,'api/manager/getUserMenus_index','fa fa-cog','yes','active');
+insert  into `menu_mas`(`menu_id`,`menu_name`,`menu_level`,`slno`,`is_parent`,`parent_id`,`menu_url`,`menu_icon`,`is_projectmanager_menu`,`status`) values (1,'College',1,1,'yes',0,'api/manager/get_college','fa fa-globe','no','active'),(2,'Hostel',1,2,'yes',0,'api/manager/get_hostel','fa fa-building-o','no','active'),(3,'Block',1,3,'yes',0,'api/manager/get_block','fa fa-flash','no','active'),(4,'Student',1,5,'yes',0,'api/manager/get_student','fa fa-user','no','active'),(5,'Users',1,7,'yes',0,'api/manager/users_index','fa fa-users','yes','active'),(6,'UserMenu',1,8,'yes',0,'api/manager/getUserMenus_index','fa fa-cog','yes','active'),(7,'Room',1,4,'yes',0,'api/manager/getRoom_index','fa fa-building-o','no','active'),(8,'RoomAllocation',1,6,'yes',0,'api/manager/getRoomAllocation_index','fa fa-cogs','no','active');
+
+/*Table structure for table `room` */
+
+DROP TABLE IF EXISTS `room`;
+
+CREATE TABLE `room` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `roomno` int(11) NOT NULL,
+  `hostelid` int(11) NOT NULL,
+  `blockid` int(100) DEFAULT NULL,
+  `roomtype` enum('AC','nonAC') DEFAULT 'AC',
+  `floorname` int(100) DEFAULT NULL,
+  `noofperson` int(11) DEFAULT NULL,
+  `status` enum('active','deactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`roomno`,`hostelid`),
+  UNIQUE KEY `NewIndex1` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+
+/*Data for the table `room` */
+
+insert  into `room`(`id`,`roomno`,`hostelid`,`blockid`,`roomtype`,`floorname`,`noofperson`,`status`,`created_at`) values (10,1,19,7,'nonAC',1,3,'active','2016-06-25 16:14:44'),(9,4,20,5,'AC',2,2,'active','2016-06-25 16:14:00'),(12,23,20,4,'AC',1,3,'active','2016-06-28 18:04:18'),(11,101,20,5,'nonAC',1,1,'active','2016-06-26 11:07:10');
+
+/*Table structure for table `room_allocation` */
+
+DROP TABLE IF EXISTS `room_allocation`;
+
+CREATE TABLE `room_allocation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `roomid` int(11) NOT NULL DEFAULT '0',
+  `studentid` int(11) NOT NULL DEFAULT '0',
+  `entry_date` date NOT NULL DEFAULT '1990-01-01',
+  `last_modified` date DEFAULT '1990-01-01',
+  `status` enum('alloted','vacated','shifted') NOT NULL DEFAULT 'alloted',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+
+/*Data for the table `room_allocation` */
+
+insert  into `room_allocation`(`id`,`roomid`,`studentid`,`entry_date`,`last_modified`,`status`,`created_at`) values (14,9,1,'2016-06-28','2016-06-28','shifted','2016-06-28 13:21:03'),(15,10,7,'2016-06-28','2016-06-28','shifted','2016-06-28 13:21:13'),(16,10,5,'2016-06-28','2016-06-28','shifted','2016-06-28 13:21:27'),(17,10,7,'2016-06-28','2016-06-28','shifted','2016-06-28 13:22:07'),(18,10,7,'2016-06-28','2016-06-28','shifted','2016-06-28 13:22:59'),(19,10,7,'2016-06-28','1990-01-01','alloted','2016-06-28 13:23:38'),(20,10,5,'2016-06-28','1990-01-01','alloted','2016-06-28 13:27:15');
 
 /*Table structure for table `state` */
 
@@ -135,6 +185,7 @@ DROP TABLE IF EXISTS `student`;
 CREATE TABLE `student` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
+  `collegeid` int(11) NOT NULL DEFAULT '0',
   `rollno` varchar(50) NOT NULL,
   `batch` varchar(50) DEFAULT NULL,
   `course` varchar(50) DEFAULT NULL,
@@ -152,7 +203,7 @@ CREATE TABLE `student` (
 
 /*Data for the table `student` */
 
-insert  into `student`(`id`,`name`,`rollno`,`batch`,`course`,`messtype`,`address`,`state`,`city`,`country`,`mobileno`,`status`,`created_at`) values (5,'Nagarajan','1028','2013','mba','veg','S/o Ramalingam\nElanthakuttai,\nK.M.Devi(p.o),\nNamakkal-637213','Tamil Nadu','Chennai','india','9976625471','active','2016-06-03 13:02:42'),(7,'Rajan','1042','2014','mca','nonveg','Erode ','Tamil Nadu','Raayachuru','india','9597921805','active','2016-06-03 17:17:48');
+insert  into `student`(`id`,`name`,`collegeid`,`rollno`,`batch`,`course`,`messtype`,`address`,`state`,`city`,`country`,`mobileno`,`status`,`created_at`) values (6,'Raja',2,'10z120','2013','mba','veg','Namakkal','Tamil Nadu','Coimbatore','india','9976625471','active','2016-06-26 21:22:12'),(1,'Nagarajan',1,'10z128','2013','mca','veg','Namakkal','Tamil Nadu','Coimbatore','india','9976625471','active','2016-06-25 16:17:20'),(5,'Sara',2,'10z129','2013','mca','veg','Namakkal','Tamil Nadu','Coimbatore','india','9976625471','active','2016-06-25 16:20:29'),(7,'Muthu',2,'10z145','2013','mba','veg','Namakkal','Tamil Nadu','Coimbatore','india','9976625471','active','2016-06-27 17:36:00');
 
 /*Table structure for table `user_vs_menu` */
 
@@ -166,11 +217,11 @@ CREATE TABLE `user_vs_menu` (
   `edit_access` enum('yes','no') NOT NULL DEFAULT 'no',
   `delete_access` enum('yes','no') NOT NULL DEFAULT 'no',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 /*Data for the table `user_vs_menu` */
 
-insert  into `user_vs_menu`(`id`,`userid`,`menu_id`,`save_access`,`edit_access`,`delete_access`) values (1,2,1,'yes','yes','yes'),(2,2,2,'yes','no','yes'),(3,2,3,'yes','yes','yes'),(4,2,4,'yes','yes','yes'),(6,2,5,'yes','yes','yes'),(15,1,2,'no','yes','no'),(16,1,5,'no','no','no');
+insert  into `user_vs_menu`(`id`,`userid`,`menu_id`,`save_access`,`edit_access`,`delete_access`) values (1,2,1,'yes','yes','yes'),(2,2,2,'yes','yes','yes'),(3,2,3,'yes','yes','yes'),(4,2,4,'yes','yes','yes'),(6,2,5,'yes','yes','yes'),(17,1,1,'yes','yes','no'),(15,1,2,'no','yes','no'),(16,1,5,'no','no','no');
 
 /*Table structure for table `users` */
 
