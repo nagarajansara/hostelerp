@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="hostelerptest" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e894026b-c641-40b9-8ad0-071bda27e26f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT s.batch, s.course, s.rollno, s.name AS studentname, c.name AS collegename, r.roomno, h.name AS hostelname FROM room_allocation ra
+INNER JOIN room r
+ON r.id = ra.roomid
+INNER JOIN hostel h
+ON r.hostelid = h.id
+INNER JOIN college c
+ON c.id = h.collegeid
+INNER JOIN student s
+ON
+s.id = ra.studentid
+WHERE ra.status = 'alloted']]>
+	</queryString>
+	<field name="batch" class="java.lang.String"/>
+	<field name="course" class="java.lang.String"/>
+	<field name="rollno" class="java.lang.String"/>
+	<field name="studentname" class="java.lang.String"/>
+	<field name="collegename" class="java.lang.String"/>
+	<field name="roomno" class="java.lang.Integer"/>
+	<field name="hostelname" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="538c6fa5-5331-4f49-8b1a-7bdd1c0fe110" x="223" y="23" width="100" height="20"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<text><![CDATA[Hostel ERP]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="64" splitType="Stretch">
+			<image>
+				<reportElement uuid="e1651b55-92b6-490f-ac5a-0aeb8856443c" x="0" y="0" width="68" height="64"/>
+				<imageExpression><![CDATA["C:\\Users\\Nagaraj\\Desktop\\hostel-128.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="19d8a634-4da6-49d2-bb36-8054978e1077" x="68" y="0" width="70" height="17"/>
+				<textElement>
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Student Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="dd09b0a7-564d-48fe-8e1d-584f11264857" x="153" y="0" width="47" height="17"/>
+				<textElement>
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Roll No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="57d25e07-0540-454b-9828-222b091177e3" x="210" y="0" width="70" height="17"/>
+				<textElement>
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[College Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5806caa3-4ebe-422e-a2ec-87568546ea39" x="400" y="0" width="70" height="17"/>
+				<textElement>
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Room No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f42448fb-1e26-4c71-9792-aadf684a2c73" x="304" y="0" width="70" height="17"/>
+				<textElement>
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hostel Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement uuid="8d1343ec-5051-40aa-b145-f773897fde6f" x="68" y="0" width="70" height="20"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{studentname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="386916ef-716c-43c0-b54b-7c46cf242e96" x="153" y="0" width="47" height="20"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rollno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="0725d4f3-67ec-4d7a-952a-ee28fcca17a7" x="210" y="0" width="70" height="20"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{collegename}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f49015e6-eb95-4caa-a72f-f7158f17e0b9" x="304" y="0" width="70" height="20"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hostelname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="3978e03b-0b18-4c8d-9cb5-a525cb20834d" x="400" y="0" width="70" height="20"/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{roomno}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="21" splitType="Stretch"/>
+	</summary>
+</jasperReport>
