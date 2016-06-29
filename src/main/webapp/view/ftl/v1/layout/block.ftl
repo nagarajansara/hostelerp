@@ -150,7 +150,7 @@
 	];
 
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
-	    + "${baseURL}/api/manager/getBlocks", aoColumns);
+	    + "${baseURL}/api/manager/getBlocks", aoColumns, 'Block name');
     $(".hrfsSubmitBlocksForm").submit(function(event){
 					event.preventDefault();
 		if($('.hrfsSubmitBlocksForm').parsley().validate())

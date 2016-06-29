@@ -243,7 +243,7 @@ var isEditableMode = false;
     }, ];
 
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
-	    + "${baseURL}/api/manager/getRooms", aoColumns);
+	    + "${baseURL}/api/manager/getRooms", aoColumns, 'Floor name');
 
 
     $(".hfmsCommonRoomSelectize").selectize({

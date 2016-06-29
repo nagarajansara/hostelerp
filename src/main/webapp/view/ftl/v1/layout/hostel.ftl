@@ -213,7 +213,7 @@
     }, ];
 
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
-	    + "${baseURL}/api/manager/getHostels", aoColumns);
+	    + "${baseURL}/api/manager/getHostels", aoColumns, 'Hostel name...');
     $(document).on("click", ".hfmsInfo", function(){
 	    var hostelId = $(this).attr("pk_id"),
 	    		URL = "http://"+ location.host + "${baseURL}/api/manager/getHostelViaId?hostelId="+hostelId;

@@ -54,7 +54,7 @@ function hfmsSetSelect2(jqSelector, url, label) {
     $(jqSelector).select2(remoteDataConfig);
 
 }
-function hfmsSetDataTableValues(jqSelector, URL, aoColumns) {
+function hfmsSetDataTableValues(jqSelector, URL, aoColumns, placeHolder) {
 
     jQuery.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings) {
 	return {
@@ -75,6 +75,9 @@ function hfmsSetDataTableValues(jqSelector, URL, aoColumns) {
 	"bProcessing" : true,
 	"bServerSide" : true,
 	"responsive" : true,
+	"language" : {
+	    'searchPlaceholder' : "Search records"
+	},
 	"sort" : "position",
 	// bStateSave variable you can use to save state on client
 	// cookies: set value "true"
@@ -96,5 +99,12 @@ function hfmsSetDataTableValues(jqSelector, URL, aoColumns) {
 	"sAjaxSource" : URL,
 	"aoColumns" : aoColumns
     });
+
+    if(placeHolder)
+    {
+	$('#dynamic-table_filter input').attr('placeholder',  placeHolder);
+    }
+
+
 
 };

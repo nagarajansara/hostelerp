@@ -170,7 +170,7 @@
     }, ];
 
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
-	    + "${baseURL}/api/manager/getColleges", aoColumns);
+	    + "${baseURL}/api/manager/getColleges", aoColumns, 'College name');
 
     $(document).ready(function() {
 			$(".hfmsAddNewBtn").click(function() {

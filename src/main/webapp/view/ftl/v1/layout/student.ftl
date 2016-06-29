@@ -246,7 +246,7 @@
     }, ];
 
     hfmsSetDataTableValues("#dynamic-table", "http://" + location.host
-	    + "${baseURL}/api/manager/getStudent", aoColumns);
+	    + "${baseURL}/api/manager/getStudent", aoColumns, 'Student name');
 
     $(document)
 	    .ready(
