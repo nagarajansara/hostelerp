@@ -62,7 +62,13 @@ function CtDAO() {
     this.ADD_ROOMS_ALLOCATION_ROOMALLOCATION_ID = this.API_PREFIX
 	    + "/manager/getRoomAllocationViaRoomAllocationId.json";
     this.UPDATE_ROOMS_ALLOCATION_ROOMALLOCATION_ID = this.API_PREFIX
-    + "/manager/updateRoomAllocationViaId.json";
+	    + "/manager/updateRoomAllocationViaId.json";
+    this.ADD_PAYMENT = this.API_PREFIX + "/manager/addPayment.json";
+    this.GET_PAYMENT_VIA_ID = this.API_PREFIX
+	    + "/manager/getPaymentsViaId.json";
+    this.UPDATE_PAYMENT_VIA_ID = this.API_PREFIX
+    + "/manager/updatePaymentsViaId.json";
+
 
     this.RESPONSE_CACHE = {};
 
@@ -211,7 +217,20 @@ CtDAO.prototype.getRoomAllocationViaRoomAllocationId = function(postParams, cbk)
 };
 CtDAO.prototype.updateRoomAllocationViaId = function(postParams, cbk) {
     var tObj = this;
-    tObj.getData(tObj.UPDATE_ROOMS_ALLOCATION_ROOMALLOCATION_ID, postParams, cbk);
+    tObj.getData(tObj.UPDATE_ROOMS_ALLOCATION_ROOMALLOCATION_ID, postParams,
+	    cbk);
+};
+CtDAO.prototype.addPayment = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.ADD_PAYMENT, postParams, cbk);
+};
+CtDAO.prototype.getPaymentsViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.GET_PAYMENT_VIA_ID, postParams, cbk);
+};
+CtDAO.prototype.updatePaymentsViaId = function(postParams, cbk) {
+    var tObj = this;
+    tObj.getData(tObj.UPDATE_PAYMENT_VIA_ID, postParams, cbk);
 };
 CtDAO.prototype.getData = function(url, postParams, callback, isCacheMap,
 	isParse) {

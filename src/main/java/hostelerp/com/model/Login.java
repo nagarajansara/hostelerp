@@ -14,9 +14,6 @@ import javax.persistence.TemporalType;
 
 import java.util.*;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 

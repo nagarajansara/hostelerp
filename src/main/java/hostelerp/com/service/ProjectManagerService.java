@@ -192,4 +192,20 @@ public interface ProjectManagerService
 
 	int getRoomNoViaHostelId_RoomNo(int hostelId, int roomId) throws Exception;
 
+	void addPayment(Payment payment) throws Exception;
+
+	List<Payment> getPayments(int startIndx, int endIndx) throws Exception;
+
+	int getPaymentsNumEntries(String sTATUS_ACTIVE) throws Exception;
+
+	List<Payment> getPaymentsViaSearchParam(int startIndx, int maxIndx,
+			String searchParameter) throws Exception;
+
+	int getPaymentsNumEntriesNumEntriesViaSearchParam(String sTATUS_ACTIVE,
+			String searchParameter) throws Exception;
+
+	List<Payment> getPaymentsViaId(int id) throws Exception;
+
+	void updatePaymentsViaId(Payment payment) throws Exception;
+
 }

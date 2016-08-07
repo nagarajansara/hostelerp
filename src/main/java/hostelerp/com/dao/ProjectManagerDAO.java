@@ -189,4 +189,20 @@ public interface ProjectManagerDAO
 
 	int getRoomNoViaHostelId_RoomNo(int hostelId, int RoomNo) throws Exception;
 
+	void addPayment(Payment payment) throws Exception;
+
+	List<Payment> getPayments(int startIndx, int endIndx) throws Exception;
+
+	int getPaymentsNumEntries(String searchParam) throws Exception;
+
+	List<Payment> getPaymentsViaSearchParam(int startIndx, int maxIndx,
+			String searchParameter) throws Exception;
+
+	int getPaymentsNumEntriesNumEntriesViaSearchParam(String searchParameter)
+			throws Exception;
+
+	List<Payment> getPaymentsViaId(int id) throws Exception;
+
+	void updatePaymentsViaId(Payment payment) throws Exception;
+
 }

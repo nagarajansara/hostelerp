@@ -25,6 +25,10 @@
 	font-weight: bold;
 }
 
+.pkDataCommonTable tbody tr {
+	font-size: 11px;
+}
+
 .pkDataCommonTable thead th {
 	border: none !important;
 }
@@ -41,7 +45,7 @@
 .hfmsStateParent div, .hfmsCityParent div {
 	width: 100%;
 }
-.pkDataCommonTable   td:last-child
-{
+
+.pkDataCommonTable   td:last-child {
 	text-align: center;
 }

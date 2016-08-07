@@ -147,7 +147,7 @@
 
 		<!-- Hibernate -->
 
-		<dependency>
+		<!--<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>3.6.3.Final</version>
@@ -156,7 +156,7 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-commons-annotations</artifactId>
 			<version>3.2.0.Final</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -172,22 +172,22 @@
 			<artifactId>persistence-api</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-tools</artifactId>
 			<version>3.2.4.GA</version>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency>-->
 
 		<!-- Hibernate end -->
 
 		<!-- lumbok -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>0.11.8</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>-->
 
 		<!-- Mail -->
 		<dependency>
@@ -224,7 +224,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- POI Library -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.9</version>
@@ -248,7 +248,7 @@
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 			<version>2.3.0</version>
-		</dependency>
+		</dependency>-->
 		<!-- POI End -->
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
@@ -289,11 +289,11 @@
 			<version>1.1</version>
 		</dependency>
 		<!-- Piwik Tracker -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.piwik</groupId>
 			<artifactId>piwik-java-tracking</artifactId>
 			<version>1.1.0</version>
-		</dependency>
+		</dependency>-->
 		<!-- Validator -->
 		<dependency>
 			<groupId>commons-validator</groupId>
@@ -368,11 +368,11 @@
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.2</version>
-		</dependency>
+		</dependency>-->
 		<!-- <dependency> <groupId>commons-javaflow</groupId> <artifactId>commons-javaflow</artifactId>
 			<version>20060411</version> </dependency> -->
 		<dependency>
@@ -432,7 +432,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.6.3</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jms</artifactId>
 			<version>3.0.1.RELEASE</version>
@@ -446,21 +446,21 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
 			<version>5.4.3</version>
-		</dependency>
+		</dependency>-->
 
 
 		<!-- Spring Data - Redis Library -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
 			<version>1.2.1.RELEASE</version>
-		</dependency>
+		</dependency>-->
 		<!-- Jedis Driver Library -->
-		<dependency>
+		<!--<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>2.4.2</version>
-		</dependency>
+		</dependency>-->
 		<!-- Spring Data commons -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -483,7 +483,7 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.8.5</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 			<version>2.9.0</version>
@@ -492,7 +492,7 @@
 			<groupId>net.sourceforge.pjl-comp-filter</groupId>
 			<artifactId>pjl-comp-filter</artifactId>
 			<version>1.7</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -508,8 +508,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<!-- <plugin> <artifactId>maven-antrun-plugin</artifactId> <executions>
@@ -519,8 +519,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<!--<plugin> <groupId>net.alchim31.maven</groupId> <artifactId>yuicompressor-maven-plugin</artifactId>

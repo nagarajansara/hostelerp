@@ -6,6 +6,7 @@ import hostelerp.com.model.CityState;
 import hostelerp.com.model.College;
 import hostelerp.com.model.Hostel;
 import hostelerp.com.model.Menu;
+import hostelerp.com.model.Payment;
 import hostelerp.com.model.Room;
 import hostelerp.com.model.RoomAllocation;
 import hostelerp.com.model.Student;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -1227,6 +1229,7 @@ public class ProjectManagerController extends BaseController
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json2 = "";
 		String STATUS_ACTIVE = "active";
+
 		try
 		{
 			Integer pageNumber = 0;
@@ -1985,5 +1988,150 @@ public class ProjectManagerController extends BaseController
 		}
 		model.addAttribute("model", response);
 		return "roomallocation";
+	}
+
+	@RequestMapping(value = "/addPayment", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updateRoomAllocationViaId(HttpServletRequest request,
+			@ModelAttribute Payment payment, ModelMap model)
+	{
+		try
+		{
+			projectManagerService.addPayment(payment);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("addPayment :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "payment";
+	}
+
+	@RequestMapping(value = "/getPayment_index", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String get_payment(HttpServletRequest request, ModelMap model)
+	{
+		try
+		{
+			String STATUS_ACTIVE = "active";
+			List<College> colleges =
+					projectManagerService
+							.getAllCollegesViaStatus(STATUS_ACTIVE);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("college", colleges);
+			utilities.setSuccessResponse(response, map);
+		} catch (Exception ex)
+		{
+			logger.error("getPayment_index :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "payment";
+	}
+
+	@RequestMapping(value = "/getPayments", method =
+	{ RequestMethod.GET, RequestMethod.POST }, produces = "application/json")
+	public @ResponseBody String getPayments(HttpServletRequest request,
+			ModelMap model)
+	{
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json2 = "";
+		String STATUS_ACTIVE = "vacated";
+		try
+		{
+			Integer pageNumber = 0;
+			if (null != request.getParameter("iDisplayStart"))
+				pageNumber =
+						(Integer.valueOf(request.getParameter("iDisplayStart")) / utilities
+								.getDefaultMaxIndx()) + 1;
+
+			// Fetch search parameter;
+			String searchParameter = request.getParameter("sSearch");
+			// Fetch Page display length
+			Integer pageDisplayLength =
+					Integer.valueOf(request.getParameter("iDisplayLength"));
+
+			int startIndx = pageNumber - 1;
+			int maxIndx = pageDisplayLength;
+
+			startIndx = getStartIdx(startIndx, maxIndx);
+
+			List<Payment> paymentList = new ArrayList<Payment>();
+			int numEntries = 0;
+
+			if (null != searchParameter && !searchParameter.equals(""))
+			{
+
+				paymentList =
+						projectManagerService.getPaymentsViaSearchParam(
+								startIndx, maxIndx, searchParameter);
+				System.out.println("paymentList :" + paymentList.size());
+				numEntries =
+						projectManagerService
+								.getPaymentsNumEntriesNumEntriesViaSearchParam(
+										STATUS_ACTIVE, searchParameter);
+				System.out.println("numEntries " + numEntries);
+			} else
+			{
+				paymentList =
+						projectManagerService.getPayments(startIndx, maxIndx);
+				numEntries =
+						projectManagerService
+								.getPaymentsNumEntries(STATUS_ACTIVE);
+			}
+
+			CommonDataTableJsonObj<List<Payment>> employeeCategoryJsonObj =
+					new CommonDataTableJsonObj<List<Payment>>();
+			// Set Total display record
+			employeeCategoryJsonObj.setiTotalDisplayRecords(numEntries);
+			// Set Total record
+			employeeCategoryJsonObj.setiTotalRecords(numEntries);
+			employeeCategoryJsonObj.setAaData(paymentList);
+			json2 = gson.toJson(employeeCategoryJsonObj);
+
+		} catch (Exception ex)
+		{
+			logger.error("getPayments :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute(json2);
+		return json2;
+	}
+
+	@RequestMapping(value = "/getPaymentsViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String getPaymentsViaId(HttpServletRequest request, ModelMap model,
+			@RequestParam("id") int id)
+	{
+		try
+		{
+			List<Payment> payments = projectManagerService.getPaymentsViaId(id);
+			utilities.setSuccessResponse(response, payments);
+		} catch (Exception ex)
+		{
+			logger.error("getPaymentsViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "payment";
+	}
+
+	@RequestMapping(value = "/updatePaymentsViaId", method =
+	{ RequestMethod.GET, RequestMethod.POST })
+	public String updatePaymentsViaId(HttpServletRequest request,
+			ModelMap model, @ModelAttribute Payment payment)
+	{
+		try
+		{
+			projectManagerService.updatePaymentsViaId(payment);
+			utilities.setSuccessResponse(response);
+		} catch (Exception ex)
+		{
+			logger.error("updatePaymentsViaId :" + ex.getMessage());
+			utilities.setErrResponse(ex, response);
+		}
+		model.addAttribute("model", response);
+		return "payment";
 	}
 }

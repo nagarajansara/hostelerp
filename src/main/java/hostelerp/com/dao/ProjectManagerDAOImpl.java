@@ -1,16 +1,23 @@
 package hostelerp.com.dao;
 
-import javax.servlet.http.HttpServletRequest;
+import hostelerp.com.model.Block;
+import hostelerp.com.model.CityState;
+import hostelerp.com.model.College;
+import hostelerp.com.model.Hostel;
+import hostelerp.com.model.Payment;
+import hostelerp.com.model.Room;
+import hostelerp.com.model.RoomAllocation;
+import hostelerp.com.model.Student;
+import hostelerp.com.model.Users;
+import hostelerp.com.util.ConstException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-
-import java.util.*;
-
-import hostelerp.com.util.*;
-import hostelerp.com.model.*;
 
 @SuppressWarnings(
 { "unused", "unchecked" })
@@ -273,12 +280,15 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 					+ "INNER JOIN college c "
 					+ "ON c.id = s.collegeid WHERE ra.status !=:status LIMIT :startIndx, :maxIndx";
 	final String GET_ROOM_ALLOCATION_DETAILS_NUMENTRIES =
-			"SELECT count(*) FROM room_allocation AS ra " + "INNER JOIN "
-					+ "room r " + "ON " + "r.id = ra.roomid "
+			"SELECT COUNT(*) FROM "
+					+ "(SELECT rt.roomid, rt.id, rt.created_at, rt.entry_date, rt.status, rt.studentid  FROM room_allocation rt "
+					+ "INNER JOIN (SELECT MAX(id) AS id FROM room_allocation "
+					+ "GROUP BY studentid) AS d " + "ON d.id = rt.id ) AS ra "
+					+ "INNER JOIN " + "room r " + "ON " + "r.id = ra.roomid "
 					+ "INNER JOIN hostel h ON h.id = r.hostelid "
 					+ "INNER JOIN student s " + "ON s.id = ra.studentid "
 					+ "INNER JOIN college c "
-					+ "ON c.id = s.collegeid WHERE ra.status !=:status";
+					+ "ON c.id = s.collegeid WHERE ra.status !=:status ";
 	final String GET_ROOM_ALLOCATION_DETAILS_VIA_SEARCHPARAM =
 			"SELECT ra.status AS roomallocationstatus, ra.roomid, s.name AS studentname, s.collegeid, c.name AS collegename, s.rollno, h.name As hostelname, ra.entry_date, REPLACE('<button pk_id=\"userid\" title=\"Edit\" class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
 					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
@@ -298,15 +308,20 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 					+ "INNER JOIN college c "
 					+ "ON c.id = s.collegeid WHERE ra.status !=:status AND (h.name LIKE :searchParam OR c.name LIKE :searchParam OR s.rollno LIKE :searchParam) LIMIT :startIndx, :maxIndx";
 	final String GET_ROOM_ALLOCATION_DETAILS_VIA_SEARCHPARAM_NUMENTRIES =
-			"SELECT count(*) FROM room_allocation AS ra "
-					+ "INNER JOIN "
-					+ "room r "
-					+ "ON "
-					+ "r.id = ra.roomid "
-					+ "INNER JOIN hostel h ON h.id = r.hostelid "
-					+ "INNER JOIN student s "
-					+ "ON s.id = ra.studentid "
-					+ "INNER JOIN college c "
+			"SELECT COUNT(*) "
+					+ "FROM (SELECT rt.roomid, rt.id, rt.created_at, rt.entry_date, rt.status, rt.studentid  "
+					+ "FROM room_allocation rt  "
+					+ "INNER JOIN (SELECT MAX(id) AS id FROM room_allocation  "
+					+ "GROUP BY studentid) AS d  "
+					+ "ON d.id = rt.id ) AS ra  "
+					+ "INNER JOIN  "
+					+ "room r  "
+					+ "ON  "
+					+ "r.id = ra.roomid  "
+					+ "INNER JOIN hostel h ON h.id = r.hostelid  "
+					+ "INNER JOIN student s  "
+					+ "ON s.id = ra.studentid  "
+					+ "INNER JOIN college c  "
 					+ "ON c.id = s.collegeid WHERE ra.status !=:status AND (h.name LIKE :searchParam OR c.name LIKE :searchParam OR s.rollno LIKE :searchParam)";
 	final String GET_STUDENT_VIA_COLLEGE_ID =
 			"SELECT CONCAT(s.rollno, ' - ', s.NAME) AS NAME, s.id  FROM student s  LEFT OUTER JOIN  room_allocation ra "
@@ -351,6 +366,45 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 					+ "WHERE h.status = 'alloted' "
 					+ "GROUP BY h.roomid) ra ON r.id = ra.roomid "
 					+ "WHERE  r.hostelid =:hostelId AND  r.roomno =:roomno  AND (ra.rowcount > 0 OR ra.roomid IS NULL)";
+	final String ADD_PAYMENT =
+			"INSERT INTO payment (studentid, collegeid, status, amount) values (:studentid, :collegeid, :status, :amount)";
+	final String GET_PAYMENTS =
+			"SELECT s.name AS studentname, p.status, c.name AS collegename, p.amount, REPLACE('<button pk_id=\"userid\" title=\"Edit\""
+					+ " class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', p.id) AS editBtn  "
+					+ "FROM payment p  "
+					+ "INNER JOIN college c  "
+					+ "ON c.id = p.collegeid "
+					+ "INNER JOIN student s  "
+					+ "ON s.id = p.studentid "
+					+ "ORDER BY p.created_at DESC  "
+					+ "LIMIT :startIndx, :endIndx";
+	final String GET_PAYMENTS_NUMENTRIES = "select count(*) from payment";
+	final String GET_PAYMENTS_VIA_SEARCHPARAM =
+			"SELECT s.name AS studentname, c.name AS collegename, p.amount, p.status, "
+					+ "REPLACE('<button pk_id=\"userid\" title=\"Edit\""
+					+ " class=\"btn btn-success btn-xs btn-perspective hfmsEditBtn\"><i class=\"fa fa-pencil-square\"></i> "
+					+ "</button> &nbsp; <button pk_id=\"userid\" title=\"Delete\" class=\"btn btn-danger btn-xs btn-perspective hfmsDelBtn\">"
+					+ "<i class=\"fa fa-trash-o\"></i> </button>', 'userid', p.id) AS editBtn  "
+					+ "FROM payment p  " + "INNER JOIN college c  "
+					+ "ON c.id = p.collegeid " + "INNER JOIN student s  "
+					+ "ON s.id = p.studentid " + "WHERE "
+					+ "s.name LIKE :searchParam OR c.name LIKE :searchParam "
+					+ "ORDER BY p.created_at DESC  "
+					+ "LIMIT :startIndx, :endIndx";
+	final String GET_PAYMENTS_NUMENTRIES_VIA_SEARCHPARAM =
+			"SELECT count(*) FROM payment p  " + "INNER JOIN college c  "
+					+ "ON c.id = p.collegeid " + "INNER JOIN student s  "
+					+ "ON s.id = p.studentid " + "WHERE "
+					+ "s.name LIKE :searchParam OR c.name LIKE :searchParam";
+	final String GET_PAYMENTS_VIA_ID =
+			"SELECT s.name AS studentname, c.name AS collegename, p.* FROM payment p "
+					+ "INNER JOIN student s " + "ON s.id = p.studentid "
+					+ "INNER JOIN college c " + "ON "
+					+ "c.id = p.collegeid where p.id =:id";
+	final String UPDATE_PAYMENTS_VIA_ID =
+			"Update payment set amount =:amount where id =:id";
 
 	@Override
 	public void addUsers(Users user) throws Exception
@@ -1226,6 +1280,81 @@ public class ProjectManagerDAOImpl implements ProjectManagerDAO
 
 		return namedParameterJdbcTemplate.queryForInt(
 				GET_ROOMS_VIA_HOSTEL_ID_AND_ROOMNO, paramMap);
+
+	}
+
+	@Override
+	public void addPayment(Payment payment) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("studentid", payment.getStudentid());
+		paramMap.put("collegeid", payment.getCollegeid());
+		paramMap.put("status", payment.getStatus());
+		paramMap.put("amount", payment.getAmount());
+
+		namedParameterJdbcTemplate.update(ADD_PAYMENT, paramMap);
+	}
+
+	@Override
+	public List<Payment> getPayments(int startIndx, int endIndx)
+			throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", endIndx);
+
+		return namedParameterJdbcTemplate.query(GET_PAYMENTS, paramMap,
+				new BeanPropertyRowMapper<Payment>(Payment.class));
+	}
+
+	@Override
+	public int getPaymentsNumEntries(String searchParam) throws Exception
+	{
+		Map paramMap = new HashMap();
+		return namedParameterJdbcTemplate.queryForInt(GET_PAYMENTS_NUMENTRIES,
+				paramMap);
+	}
+
+	@Override
+	public List<Payment> getPaymentsViaSearchParam(int startIndx, int maxIndx,
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("searchParam", searchParameter + "%");
+		paramMap.put("startIndx", startIndx);
+		paramMap.put("endIndx", maxIndx);
+		return namedParameterJdbcTemplate.query(GET_PAYMENTS_VIA_SEARCHPARAM,
+				paramMap, new BeanPropertyRowMapper<Payment>(Payment.class));
+	}
+
+	@Override
+	public int getPaymentsNumEntriesNumEntriesViaSearchParam(
+			String searchParameter) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("searchParam", searchParameter + "%");
+		return namedParameterJdbcTemplate.queryForInt(
+				GET_PAYMENTS_NUMENTRIES_VIA_SEARCHPARAM, paramMap);
+	}
+
+	@Override
+	public List<Payment> getPaymentsViaId(int id) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", id);
+		return namedParameterJdbcTemplate.query(GET_PAYMENTS_VIA_ID, paramMap,
+				new BeanPropertyRowMapper<Payment>(Payment.class));
+
+	}
+
+	@Override
+	public void updatePaymentsViaId(Payment payment) throws Exception
+	{
+		Map paramMap = new HashMap();
+		paramMap.put("id", payment.getId());
+		paramMap.put("amount", payment.getAmount());
+
+		namedParameterJdbcTemplate.update(UPDATE_PAYMENTS_VIA_ID, paramMap);
 
 	}
 

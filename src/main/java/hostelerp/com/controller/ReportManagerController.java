@@ -113,7 +113,7 @@ public class ReportManagerController extends BaseController
 	}
 
 	private JasperReport getCompiledFile(String fileName,
-			HttpServletRequest request) throws JRException
+			HttpServletRequest request) throws JRException, Exception
 	{
 
 		logger.info("Jasper file path: "
@@ -153,7 +153,7 @@ public class ReportManagerController extends BaseController
 
 	private void generateReportHtml(JasperPrint jasperPrint,
 			HttpServletRequest req, HttpServletResponse resp)
-			throws IOException, JRException
+			throws IOException, JRException, Exception
 	{
 		try
 		{
@@ -177,7 +177,7 @@ public class ReportManagerController extends BaseController
 
 	private void generateReportPDF(HttpServletResponse resp, Map parameters,
 			JasperReport jasperReport, Connection conn) throws JRException,
-			NamingException, SQLException, IOException
+			NamingException, SQLException, IOException, Exception
 	{
 
 		try
@@ -203,7 +203,7 @@ public class ReportManagerController extends BaseController
 
 	private void generateReportCsv(JasperPrint jasperPrint,
 			HttpServletRequest req, HttpServletResponse response)
-			throws IOException, JRException
+			throws IOException, JRException, Exception
 	{
 
 		try

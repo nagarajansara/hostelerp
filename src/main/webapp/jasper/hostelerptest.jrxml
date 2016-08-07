@@ -41,7 +41,7 @@ WHERE ra.status = 'alloted']]>
 		<band height="64" splitType="Stretch">
 			<image>
 				<reportElement uuid="e1651b55-92b6-490f-ac5a-0aeb8856443c" x="0" y="0" width="68" height="64"/>
-				<imageExpression><![CDATA["C:\\Users\\Nagaraj\\Desktop\\hostel-128.png"]]></imageExpression>
+				<imageExpression><![CDATA["/var/lib/tomcat7/webapps/hostelerp/jasper/hostel-128.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

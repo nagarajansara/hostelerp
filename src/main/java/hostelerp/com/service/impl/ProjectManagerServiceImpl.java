@@ -6,6 +6,7 @@ import hostelerp.com.model.Block;
 import hostelerp.com.model.CityState;
 import hostelerp.com.model.College;
 import hostelerp.com.model.Hostel;
+import hostelerp.com.model.Payment;
 import hostelerp.com.model.Room;
 import hostelerp.com.model.RoomAllocation;
 import hostelerp.com.model.Student;
@@ -475,6 +476,22 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 	}
 
 	@Override
+	public List<Payment> getPaymentsViaSearchParam(int startIndx, int maxIndx,
+			String searchParameter) throws Exception
+	{
+
+		return projectManagerDAO.getPaymentsViaSearchParam(startIndx, maxIndx,
+				searchParameter);
+	}
+
+	@Override
+	public int getPaymentsNumEntriesNumEntriesViaSearchParam(
+			String sTATUS_ACTIVE, String searchParameter) throws Exception
+	{
+		return projectManagerDAO.getPaymentsNumEntriesNumEntriesViaSearchParam(searchParameter);
+	}
+
+	@Override
 	public List<Student> getStudentViaCollegeId(int collegeId,
 			String sTATUS_ACTIVE) throws Exception
 	{
@@ -529,5 +546,39 @@ public class ProjectManagerServiceImpl implements ProjectManagerService
 	{
 		return projectManagerDAO.getRoomNoViaHostelId_RoomNo(hostelId, RoomNo);
 	}
+
+	@Override
+	public void addPayment(Payment payment) throws Exception
+	{
+		projectManagerDAO.addPayment(payment);
+
+	}
+
+	@Override
+	public List<Payment> getPayments(int startIndx, int endIndx)
+			throws Exception
+	{
+		return projectManagerDAO.getPayments(startIndx, endIndx);
+	}
+
+	@Override
+	public int getPaymentsNumEntries(String searchParam) throws Exception
+	{
+		return projectManagerDAO.getPaymentsNumEntries(searchParam);
+	}
+
+	@Override
+	public List<Payment> getPaymentsViaId(int id) throws Exception
+	{
+		return projectManagerDAO.getPaymentsViaId(id);
+	}
+
+	@Override
+	public void updatePaymentsViaId(Payment payment) throws Exception
+	{
+		projectManagerDAO.updatePaymentsViaId(payment);
+	}
+
+
 
 }
